@@ -1,5 +1,25 @@
 <h1 align="center" style="font-weight: bold;">Dream Team Optimizer</h1>
 
+<p align="center">
+    <a href="https://github.com/ptrvsrg/dream-team-optimizer/actions/workflows/build-and-test-dotnet.yml">
+        <img alt="GitHub Actions Build and Test Workflow Status" src="https://img.shields.io/github/actions/workflow/status/ptrvsrg/dream-team-optimizer/build-and-test-dotnet.yml?branch=develop&style=flat&labelColor=222222&color=77D4FC&label=Build%20and%20Test%20%7C%20develop">
+    </a>
+    <a href="https://github.com/ptrvsrg/dream-team-optimizer/graphs/contributors">
+        <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/ptrvsrg/dream-team-optimizer?style=flat&label=Contributors&labelColor=222222&color=77D4FC"/>
+    </a>
+    <a href="https://github.com/ptrvsrg/dream-team-optimizer/forks">
+        <img alt="GitHub forks" src="https://img.shields.io/github/forks/ptrvsrg/dream-team-optimizer?style=flat&label=Forks&labelColor=222222&color=77D4FC"/>
+    </a>
+    <a href="https://github.com/ptrvsrg/dream-team-optimizer/stargazers">
+        <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/ptrvsrg/dream-team-optimizer?style=flat&label=Stars&labelColor=222222&color=77D4FC"/>
+    </a>
+    <a href="https://github.com/ptrvsrg/dream-team-optimizer/issues">
+        <img alt="GitHub issues" src="https://img.shields.io/github/issues/ptrvsrg/dream-team-optimizer?style=flat&label=Issues&labelColor=222222&color=77D4FC"/>
+    </a>
+    <a href="https://github.com/ptrvsrg/dream-team-optimizer/pulls">
+        <img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr/ptrvsrg/dream-team-optimizer?style=flat&label=Pull%20Requests&labelColor=222222&color=77D4FC"/>
+    </a>
+</p>
 
 <p align="center">The algorithm for forming development teams based on their preferences, in order to maximize harmony and satisfaction of participants.</p>
 
@@ -11,7 +31,7 @@
   <summary>More detailed description of the task</summary>
 
 **The Dream Team Optimizer** project is designed to optimally form development teams based on their preferences gathered
-during the hackathon. Each developer (June or team leader) makes a list of desirable colleagues with whom he would like
+during the hackathon. Each developer (Juniors or TeamLeads) makes a list of desirable colleagues with whom he would like
 to work in a team. Based on this data, the project calculates the satisfaction index for each participant, and then
 calculates the harmony of the team distribution. The main goal of the project is to maximize the harmony of team
 formation in order to ensure the greatest satisfaction of the participants. This tool can be useful for HR professionals
