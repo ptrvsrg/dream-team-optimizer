@@ -19,29 +19,48 @@ to optimize the process of creating dream teams.
 
 </details>
 
+<h3>Strategies</h3>
+
++ Gale–Shapley algorithm
++ Strategy based on a complete bipartite graph (Gale–Shapley algorithm with additional rating points)
+
 <h2 id="technologies">Technologies</h2>
 
-+ .NET SDK 8.0.8
++ .NET SDK 8.0
 
 <h2 id="started">Getting started</h2>
 
-Here you describe how to run project locally
-
 <h3>Prerequisites</h3>
 
-Prerequisites required to launch your project:
-
-- Will be soon...
+- Git
+- .NET SDK
+- Docker
 
 <h3>Installation</h3>
 
+```shell
+git clone https://github.com/ptrvsrg/dream-team-optimizer
+```
+
+<h3>Launch</h3>
+
 <h4>Locally</h4>
 
-Will be soon...
+```shell
+make build.console
+./out/console/DreamTeamOptimizer.ConsoleApp \
+  -j DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv \
+  -t DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv
+```
 
 <h4>Docker</h4>
 
-Will be soon...
+```shell
+make build-image.console
+docker run -v "./DreamTeamOptimizer.ConsoleApp/example:/example" ptrvsrg/dream-team-optimizer-console \
+  -j /example/Juniors20.csv \
+  -t /example/Teamleads20.csv
+```
 
 <h2 id="contribute">Contribute</h2>
 
