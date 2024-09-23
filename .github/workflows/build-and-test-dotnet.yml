@@ -1,4 +1,4 @@
-name: Build and Test | .NET
+name: Build and Test .NET
 
 on:
   push:
@@ -18,6 +18,20 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build -o out --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - name: Launch Gale-Shapley Strategy
+      run: |
+        ./out/DreamTeamOptimizer.ConsoleApp \
+        -j DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv \
+        -t DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv \
+        -n 1000 \
+        -s GaleShapley
+    - name: Launch Bipartite Graph With Rating Strategy
+      run: |
+        ./out/DreamTeamOptimizer.ConsoleApp \
+        -j DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv \
+        -t DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv \
+        -n 1000 \
+        -s BipartiteGraphWithRating
