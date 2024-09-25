@@ -27,11 +27,13 @@ jobs:
         -j DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv \
         -t DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv \
         -n 1000 \
-        -s GaleShapley
+        -s GaleShapley \
+        -c 4
     - name: Launch Bipartite Graph With Rating Strategy
       run: |
         ./out/DreamTeamOptimizer.ConsoleApp \
         -j DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv \
         -t DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv \
         -n 1000 \
-        -s BipartiteGraphWithRating
+        -s BipartiteGraphWithRating \
+        -c 4

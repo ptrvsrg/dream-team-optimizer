@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+      <ProjectReference Include="..\DreamTeamOptimizer.Core\DreamTeamOptimizer.Core.csproj" />
+    </ItemGroup>
+
+    <PropertyGroup>
+        <Version>0.0.0</Version>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+</Project>
