@@ -1,4 +1,6 @@
-namespace DreamTeamOptimizer.Core;
+using DreamTeamOptimizer.Core.Entities;
+
+namespace DreamTeamOptimizer.Core.Interfaces;
 
 public interface IStrategy
 {

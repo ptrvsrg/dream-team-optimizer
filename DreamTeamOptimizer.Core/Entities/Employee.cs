@@ -1,9 +1,9 @@
-namespace DreamTeamOptimizer.Core;
+namespace DreamTeamOptimizer.Core.Entities;
 
 public class Employee
 {
     public int Id { get; set; }
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     public WishList GetWishlist(IEnumerable<Employee> employees)
     {

@@ -1,11 +1,11 @@
-namespace DreamTeamOptimizer.Core;
+namespace DreamTeamOptimizer.Core.Entities;
 
 public class Hackathon
 {
-    public IEnumerable<Employee> Juniors { get; }
-    public IEnumerable<Employee> TeamLeads { get; }
-    public HRManager HrManager { get; }
-    public HRDirector HrDirector { get; }
+    private IEnumerable<Employee> Juniors { get; }
+    private IEnumerable<Employee> TeamLeads { get; }
+    private HRManager HrManager { get; }
+    private HRDirector HrDirector { get; }
 
     public Hackathon(IEnumerable<Employee> juniors, IEnumerable<Employee> teamLeads, HRManager hrManager,
         HRDirector hrDirector)

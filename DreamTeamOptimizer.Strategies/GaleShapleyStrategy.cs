@@ -1,4 +1,5 @@
-﻿using DreamTeamOptimizer.Core;
+﻿using DreamTeamOptimizer.Core.Entities;
+using DreamTeamOptimizer.Core.Interfaces;
 
 namespace DreamTeamOptimizer.Strategies;
 
@@ -7,17 +8,14 @@ public class GaleShapleyStrategy : IStrategy
     public IEnumerable<Team> BuildTeams(IEnumerable<Employee> teamLeads, IEnumerable<Employee> juniors,
         IEnumerable<WishList> teamLeadsWishlists, IEnumerable<WishList> juniorsWishlists)
     {
-        var unmatchedJuniors = new Queue<Employee>(juniors);
+        var teamLeadsList = teamLeads.ToList();
+        var juniorsList = juniors.ToList();
+        
+        var unmatchedJuniors = new Queue<Employee>(juniorsList);
         var currentMatches = new Dictionary<int, int>();
-        var proposalsMade = new Dictionary<int, HashSet<int>>();
 
         var teamLeadsWishlistsDict = teamLeadsWishlists.ToDictionary(w => w.EmployeeId, w => w.DesiredEmployees.ToList());
         var juniorsWishlistsDict = juniorsWishlists.ToDictionary(w => w.EmployeeId, w => w.DesiredEmployees.ToList());
-
-        foreach (var teamLead in teamLeads)
-        {
-            proposalsMade[teamLead.Id] = new HashSet<int>();
-        }
 
         while (unmatchedJuniors.Count > 0)
         {
@@ -26,18 +24,17 @@ public class GaleShapleyStrategy : IStrategy
 
             foreach (var preferredTeamLeadId in juniorWishlist)
             {
-                var teamLead = teamLeads.First(tl => tl.Id == preferredTeamLeadId);
+                var teamLead = teamLeadsList.First(tl => tl.Id == preferredTeamLeadId);
                 var teamLeadWishlist = teamLeadsWishlistsDict[teamLead.Id];
 
-                if (currentMatches.ContainsKey(teamLead.Id))
+                if (currentMatches.TryGetValue(teamLead.Id, out var currentJuniorId))
                 {
-                    var currentJuniorId = currentMatches[teamLead.Id];
                     var currentJuniorRank = teamLeadWishlist.IndexOf(currentJuniorId);
                     var newJuniorRank = teamLeadWishlist.IndexOf(junior.Id);
 
                     if (newJuniorRank < currentJuniorRank)
                     {
-                        unmatchedJuniors.Enqueue(juniors.First(j => j.Id == currentJuniorId));
+                        unmatchedJuniors.Enqueue(juniorsList.First(j => j.Id == currentJuniorId));
                         currentMatches[teamLead.Id] = junior.Id;
                         break;
                     }
@@ -52,8 +49,8 @@ public class GaleShapleyStrategy : IStrategy
 
         var teams = currentMatches.Select(match =>
         {
-            var teamLead = teamLeads.First(tl => tl.Id == match.Key);
-            var junior = juniors.First(j => j.Id == match.Value);
+            var teamLead = teamLeadsList.First(tl => tl.Id == match.Key);
+            var junior = juniorsList.First(j => j.Id == match.Value);
             return new Team(teamLead, junior);
         }).ToList();
 

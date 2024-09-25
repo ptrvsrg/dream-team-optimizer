@@ -1,4 +1,4 @@
-namespace DreamTeamOptimizer.Core;
+namespace DreamTeamOptimizer.Core.Entities;
 
 public class HRDirector
 {
@@ -20,23 +20,25 @@ public class HRDirector
 
     private double CalculateSatisfaction(int employeeId, int selectedEmployeeId, Dictionary<int, List<int>> wishlists)
     {
-        if (!wishlists.ContainsKey(employeeId)) return 0;
-        var wishlist = wishlists[employeeId];
+        if (!wishlists.TryGetValue(employeeId, out var wishlist))
+        {
+            return 0;
+        }
         
-        int index = wishlist.IndexOf(selectedEmployeeId);
+        var index = wishlist.IndexOf(selectedEmployeeId);
         if (index == -1) return 0;
         return wishlist.Count - index;
     }
 
-    private double CalculateHarmonicMean(IEnumerable<double> values)
+    private double CalculateHarmonicMean(List<double> values)
     {
-        double sum = 0;
+        var sum = 0.0;
         foreach (var value in values)
         {
             if (value == 0) return 0;
             sum += 1.0 / value;
         }
 
-        return values.Count() / sum;
+        return values.Count / sum;
     }
 }

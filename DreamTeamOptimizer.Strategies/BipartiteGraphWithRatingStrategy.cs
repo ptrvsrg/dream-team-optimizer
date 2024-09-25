@@ -1,4 +1,5 @@
-﻿using DreamTeamOptimizer.Core;
+﻿using DreamTeamOptimizer.Core.Entities;
+using DreamTeamOptimizer.Core.Interfaces;
 
 namespace DreamTeamOptimizer.Strategies;
 
@@ -30,14 +31,14 @@ public class BipartiteGraphWithRatingStrategy : IStrategy
                 var teamLeadPreferenceIndex = teamLeadsWishlistsDict[teamLead.Id].IndexOf(junior.Id);
 
                 // Calculate satisfaction
-                int juniorSatisfaction = juniorsWishlistsDict[junior.Id].Count - juniorPreferenceIndex;
-                int teamLeadSatisfaction = teamLeadsWishlistsDict[teamLead.Id].Count - teamLeadPreferenceIndex;
-                int baseWeight = juniorSatisfaction + teamLeadSatisfaction;
+                var juniorSatisfaction = juniorsWishlistsDict[junior.Id].Count - juniorPreferenceIndex;
+                var teamLeadSatisfaction = teamLeadsWishlistsDict[teamLead.Id].Count - teamLeadPreferenceIndex;
+                var baseWeight = juniorSatisfaction + teamLeadSatisfaction;
 
                 // Adjust the weight taking into account the ratings
-                double juniorRating = juniorRatings[junior.Id] * RatingCoefficient;
-                double teamLeadRating = teamLeadRatings[teamLead.Id] * RatingCoefficient;
-                double adjustedWeight = baseWeight + juniorRating + teamLeadRating;
+                var juniorRating = juniorRatings[junior.Id] * RatingCoefficient;
+                var teamLeadRating = teamLeadRatings[teamLead.Id] * RatingCoefficient;
+                var adjustedWeight = baseWeight + juniorRating + teamLeadRating;
 
                 edges.Add(new Edge(junior, teamLead, adjustedWeight));
             }
