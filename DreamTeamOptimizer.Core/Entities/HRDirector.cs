@@ -1,3 +1,5 @@
+using DreamTeamOptimizer.Core.Exceptions;
+
 namespace DreamTeamOptimizer.Core.Entities;
 
 public class HRDirector
@@ -22,11 +24,14 @@ public class HRDirector
     {
         if (!wishlists.TryGetValue(employeeId, out var wishlist))
         {
-            return 0;
+            throw new WishListNotFoundException(employeeId);
         }
         
         var index = wishlist.IndexOf(selectedEmployeeId);
-        if (index == -1) return 0;
+        if (index == -1)
+        {
+            throw new EmployeeInWishListNotFoundException(employeeId, selectedEmployeeId);
+        }
         return wishlist.Count - index;
     }
 
@@ -35,7 +40,10 @@ public class HRDirector
         var sum = 0.0;
         foreach (var value in values)
         {
-            if (value == 0) return 0;
+            if (value == 0)
+            {
+                throw new DivideByZeroException();
+            }
             sum += 1.0 / value;
         }
 
