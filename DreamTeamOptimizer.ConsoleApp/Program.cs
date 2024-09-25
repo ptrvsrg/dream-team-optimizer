@@ -23,6 +23,9 @@ public class Program
 
         [Option('n', "hackathons", Default = 1000, HelpText = "Number of hackathons to conduct.")]
         public int HackathonsCount { get; set; }
+
+        [Option('c', "concurrency", Default = 1, HelpText = "Number of threads.")]
+        public int ThreadCount { get; set; }
     }
 
     private static void Main(string[] args)
@@ -30,6 +33,6 @@ public class Program
         BasicConfigurator.Configure();
         Parser.Default.ParseArguments<Options>(args)
             .WithParsed(options => HackathonWorker.Run(options.JuniorsFilePath, options.TeamLeadsFilePath,
-                options.StrategyType, options.HackathonsCount));
+                options.StrategyType, options.HackathonsCount, options.ThreadCount));
     }
 }
