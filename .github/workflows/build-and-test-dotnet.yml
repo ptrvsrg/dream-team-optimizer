@@ -29,11 +29,19 @@ jobs:
         -n 1000 \
         -s GaleShapley \
         -c 4
-    - name: Launch Bipartite Graph With Rating Strategy
+    - name: Launch Weighted Preference Strategy
       run: |
-        ./out/DreamTeamOptimizer.ConsoleApp \
-        -j DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv \
-        -t DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv \
-        -n 1000 \
-        -s BipartiteGraphWithRating \
-        -c 4
+          ./out/DreamTeamOptimizer.ConsoleApp \
+          -j DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv \
+          -t DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv \
+          -n 1000 \
+          -s WeightedPreference \
+          -c 4
+    - name: Launch Bipartite Graph Strategy
+      run: |
+          ./out/DreamTeamOptimizer.ConsoleApp \
+          -j DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv \
+          -t DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv \
+          -n 1000 \
+          -s BipartiteGraph \
+          -c 4
