@@ -1,8 +1,5 @@
 ﻿using CommandLine;
-using DreamTeamOptimizer.Core.Entities;
-using DreamTeamOptimizer.Core.Helpers;
 using DreamTeamOptimizer.Strategies;
-using log4net;
 using log4net.Config;
 
 namespace DreamTeamOptimizer.ConsoleApp;
@@ -18,7 +15,8 @@ public class Program
         public string TeamLeadsFilePath { get; set; } = null!;
 
         [Option('s', "strategy", Default = StrategyType.GaleShapley,
-            HelpText = "Strategy to use for team building (GaleShapley, BipartiteGraphWithRating).")]
+            HelpText =
+                "Strategy to use for team building (GaleShapley, BipartiteGraph, WeightedPreference).")]
         public StrategyType StrategyType { get; set; }
 
         [Option('n', "hackathons", Default = 1000, HelpText = "Number of hackathons to conduct.")]

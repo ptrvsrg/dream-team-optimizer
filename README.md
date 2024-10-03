@@ -27,9 +27,6 @@
 
 <h2 id="description">Description</h2>
 
-<details>
-  <summary>More detailed description of the task</summary>
-
 **The Dream Team Optimizer** project is designed to optimally form development teams based on their preferences gathered
 during the hackathon. Each developer (Juniors or TeamLeads) makes a list of desirable colleagues with whom he would like
 to work in a team. Based on this data, the project calculates the satisfaction index for each participant, and then
@@ -37,12 +34,68 @@ calculates the harmony of the team distribution. The main goal of the project is
 formation in order to ensure the greatest satisfaction of the participants. This tool can be useful for HR professionals
 to optimize the process of creating dream teams.
 
+<h2>Strategies</h2>
+
+<h3>Gale–Shapley algorithm</h3>
+
+The strategy is based on the [Gale-Shapley algorithm](https://en.wikipedia.org/wiki/Gale%E2%80%93Shapley_algorithm)
+(also known as the deferred acceptance algorithm, the offer and rejection algorithm, or the Boston Pool algorithm). This
+algorithm solves the problem of stable matching, which consists in pairing an equal number of participants of two types
+using the preferences of each participant.
+
+<h3>Strategy based on bipartite graph</h3>
+
+In order to form teams, a complete weighted bipartite graph is built, such that there are juniors in one share, team
+leaders in the other, and the edges have a weight equal to the sum of the vertex satisfaction indices. Next, the edges
+are sorted by weight and teams are formed sequentially from the edge with the highest weight (after creating the team,
+the corresponding vertices and edges are removed from the rating)
+
+<h3>Weighted preference strategy</h3>
+
+It is a modification of Gale–Shapley algorithm. By introducing weights into preferences, it is possible to balance on 
+changing priorities in order to fairly take into account the interests of both sides. For example, if one side prefers 
+instinctively, its preferences may carry more weight.
+
+<h3>Comparison</h3>
+
+<details>
+  <summary>Machine parameters</summary>
+
++ **CPU:** AMD Ryzen 5 3500U with Radeon Vega Mobile Gfx
++ **RAM:** DDR4 8GB 3200 MHz * 2
+
 </details>
 
-<h3>Strategies</h3>
-
-+ Gale–Shapley algorithm
-+ Strategy based on a complete bipartite graph (Gale–Shapley algorithm with additional rating points)
+<table>
+    <tr>
+        <th>Strategy</th>
+        <th>CPU, %</th>
+        <th>RAM, %</th>
+        <th>Time, s</th>
+        <th>Harmonicity</th>
+    </tr>
+    <tr>
+        <td>Gale–Shapley algorithm</td>
+        <td>209.667</td>
+        <td>0.367</td>
+        <td>91</td>
+        <td>13.907</td>
+    </tr>
+    <tr>
+        <td>Weighted preference strategy</td>
+        <td>317</td>
+        <td>0.367</td>
+        <td>120</td>
+        <td>14.157</td>
+    </tr>
+    <tr>
+        <td>Strategy based on bipartite graph</td>
+        <td>369.583</td>
+        <td>0.375</td>
+        <td>129</td>
+        <td>14.159</td>
+    </tr>
+</table>
 
 <h2 id="technologies">Technologies</h2>
 
@@ -67,14 +120,14 @@ git clone https://github.com/ptrvsrg/dream-team-optimizer
 Help message:
 
 ```shell
-DreamTeamOptimizer.ConsoleApp 0.0.0+f832d4867089b925e28d68c2c88097762ca11b21
+DreamTeamOptimizer.ConsoleApp 0.0.0+e97b0919eaffe5bc18c31b259d5ce9f1b684d11a
 Copyright (C) 2024 DreamTeamOptimizer.ConsoleApp
 
   -j, --juniors        Required. Path to the juniors CSV file.
 
   -t, --teamleads      Required. Path to the team leads CSV file.
 
-  -s, --strategy       (Default: GaleShapley) Strategy to use for team building (GaleShapley, BipartiteGraphWithRating).
+  -s, --strategy       (Default: GaleShapley) Strategy to use for team building (GaleShapley, ReverseGaleShapley, BipartiteGraph, WeightedPreference).
 
   -n, --hackathons     (Default: 1000) Number of hackathons to conduct.
 

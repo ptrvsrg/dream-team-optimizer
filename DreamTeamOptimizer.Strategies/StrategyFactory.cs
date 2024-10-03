@@ -9,7 +9,8 @@ public class StrategyFactory
         return type switch
         {
             StrategyType.GaleShapley => new GaleShapleyStrategy(),
-            StrategyType.BipartiteGraphWithRating => new BipartiteGraphWithRatingStrategy(),
+            StrategyType.WeightedPreference => new WeightedPreferenceStrategy(),
+            StrategyType.BipartiteGraph => new BipartiteGraphStrategy(),
             _ => throw new NotSupportedException("Unsupported strategy")
         };
     }
