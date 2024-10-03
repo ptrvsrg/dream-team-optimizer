@@ -7,7 +7,8 @@ public class EmployeeInWishListNotFoundException : Exception
 
     public EmployeeInWishListNotFoundException() : base(
         "Employee not found in wish list")
-    {}
+    {
+    }
 
     public EmployeeInWishListNotFoundException(int employeeId, int selectedEmployeeId) : base(
         $"Employee with ID {selectedEmployeeId} not found in wish list of employee with ID {employeeId}")

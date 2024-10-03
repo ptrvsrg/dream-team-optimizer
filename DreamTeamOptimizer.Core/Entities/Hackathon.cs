@@ -21,7 +21,7 @@ public class Hackathon
         var teamLeadsWishLists = HrManager.VoteEmployees(TeamLeads, Juniors);
         var juniorsWishLists = HrManager.VoteEmployees(Juniors, TeamLeads);
         var teams = HrManager.BuildTeams(TeamLeads, Juniors, teamLeadsWishLists, juniorsWishLists);
-        
+
         return HrDirector.CalculateDistributionHarmony(teams, teamLeadsWishLists, juniorsWishLists);
     }
 }

@@ -9,14 +9,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="CommandLineParser" Version="2.9.1" />
-      <PackageReference Include="CsvHelper" Version="33.0.1" />
-      <PackageReference Include="log4net" Version="3.0.0" />
+        <PackageReference Include="CommandLineParser" Version="2.9.1"/>
+        <PackageReference Include="CsvHelper" Version="33.0.1"/>
+        <PackageReference Include="log4net" Version="3.0.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DreamTeamOptimizer.Core\DreamTeamOptimizer.Core.csproj" />
-      <ProjectReference Include="..\DreamTeamOptimizer.Strategies\DreamTeamOptimizer.Strategies.csproj" />
+        <ProjectReference Include="..\DreamTeamOptimizer.Core\DreamTeamOptimizer.Core.csproj"/>
+        <ProjectReference Include="..\DreamTeamOptimizer.Strategies\DreamTeamOptimizer.Strategies.csproj"/>
     </ItemGroup>
 
 </Project>

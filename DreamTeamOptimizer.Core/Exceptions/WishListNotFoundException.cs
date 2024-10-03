@@ -4,7 +4,7 @@ public class WishListNotFoundException : Exception
 {
     private int EmployeeId { get; }
 
-    public WishListNotFoundException(int employeeId): base($"Wish list by employee ID {employeeId} not found")
+    public WishListNotFoundException(int employeeId) : base($"Wish list by employee ID {employeeId} not found")
     {
         EmployeeId = employeeId;
     }
