@@ -4,11 +4,11 @@ namespace DreamTeamOptimizer.Core.Entities;
 
 public class HrManager
 {
-    private IStrategy Strategy { get; }
+    private readonly IStrategy _strategy;
 
     public HrManager(IStrategy strategy)
     {
-        Strategy = strategy;
+        _strategy = strategy;
     }
 
     public List<WishList> VoteEmployees(IEnumerable<Employee> employees, IEnumerable<Employee> variants)
@@ -19,6 +19,6 @@ public class HrManager
     public List<Team> BuildTeams(IEnumerable<Employee> teamLeads, IEnumerable<Employee> juniors,
         IEnumerable<WishList> teamLeadsWishlists, IEnumerable<WishList> juniorsWishlists)
     {
-        return Strategy.BuildTeams(teamLeads, juniors, teamLeadsWishlists, juniorsWishlists).ToList();
+        return _strategy.BuildTeams(teamLeads, juniors, teamLeadsWishlists, juniorsWishlists).ToList();
     }
 }

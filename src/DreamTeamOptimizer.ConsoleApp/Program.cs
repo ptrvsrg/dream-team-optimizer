@@ -21,15 +21,16 @@ internal class Program
             .Enrich.FromLogContext()
             .WriteTo.Console()
             .CreateLogger();
-        
+
         var host = Host.CreateDefaultBuilder(args)
             .UseSerilog()
-            .ConfigureServices((_, services) => 
+            .ConfigureServices((_, services) =>
             {
                 services.AddLogging(logging => logging.ClearProviders().AddSerilog());
                 services.AddHostedService<HackathonWorker>();
                 services.AddSingleton<Hackathon>();
-                services.AddSingleton<CommandLineOptions>(_ => Parser.Default.ParseArguments<CommandLineOptions>(args).Value);
+                services.AddSingleton<CommandLineOptions>(_ =>
+                    Parser.Default.ParseArguments<CommandLineOptions>(args).Value);
                 services.AddSingleton<IStrategy>(provider =>
                 {
                     var options = provider.GetRequiredService<CommandLineOptions>();
@@ -49,9 +50,9 @@ internal class Program
                     return CsvLoader.Load<TeamLead>(teamLeadsFilePath);
                 });
                 services.AddSingleton<HrManager>();
-                services.AddSingleton<HrDirector>(); 
+                services.AddSingleton<HrDirector>();
             }).Build();
-    
+
         await host.RunAsync();
         await Log.CloseAndFlushAsync();
     }

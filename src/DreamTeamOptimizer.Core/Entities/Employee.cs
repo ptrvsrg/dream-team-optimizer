@@ -3,7 +3,13 @@ namespace DreamTeamOptimizer.Core.Entities;
 public class Employee
 {
     public int Id { get; set; }
-    public string Name { get; set; } = null!;
+    public string Name { get; set; }
+
+    public Employee(int id, string name)
+    {
+        Id = id;
+        Name = name;
+    }
 
     public WishList GetWishlist(IEnumerable<Employee> employees)
     {

@@ -4,7 +4,7 @@ using Serilog;
 
 namespace DreamTeamOptimizer.ConsoleApp.HostedServices;
 
-public class HackathonWorker: BackgroundService
+public class HackathonWorker : BackgroundService
 {
     private readonly IHostApplicationLifetime _hostLifetime;
     private readonly Hackathon _hackathon;
@@ -24,18 +24,20 @@ public class HackathonWorker: BackgroundService
         var hackathonNum = 0;
         var lockObj = new object();
 
-        Parallel.For(0, _commandLineOptions.HackathonsCount, new ParallelOptions { MaxDegreeOfParallelism = _commandLineOptions.ThreadCount }, _ =>
-        {
-            var harmonicity = _hackathon.Conduct();
-            
-            lock (lockObj)
+        Parallel.For(0, _commandLineOptions.HackathonsCount,
+            new ParallelOptions { MaxDegreeOfParallelism = _commandLineOptions.ThreadCount }, _ =>
             {
-                totalHarmonicity += harmonicity;
-                hackathonNum++;
-                var averageHarmonicity = totalHarmonicity / hackathonNum;
-                Log.Information($"Hackathon {hackathonNum}: harmonicity={harmonicity:F5}, average_harmonicity={averageHarmonicity:F5}");
-            }
-        });
+                var harmonicity = _hackathon.Conduct();
+
+                lock (lockObj)
+                {
+                    totalHarmonicity += harmonicity;
+                    hackathonNum++;
+                    var averageHarmonicity = totalHarmonicity / hackathonNum;
+                    Log.Information(
+                        $"Hackathon {hackathonNum}: harmonicity={harmonicity:F5}, average_harmonicity={averageHarmonicity:F5}");
+                }
+            });
 
         var averageHarmonicity = totalHarmonicity / _commandLineOptions.HackathonsCount;
         Log.Information($"Average harmonicity across all hackathons: {averageHarmonicity:F5}");
@@ -50,7 +52,7 @@ public class HackathonWorker: BackgroundService
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)
-    { 
+    {
         Log.Information("Hackathons finished");
         return base.StopAsync(cancellationToken);
     }

@@ -77,10 +77,7 @@ public class WeightedPreferenceStrategy : IStrategy
         if (wishlists.TryGetValue(employeeId, out var wishlist))
         {
             var index = Array.IndexOf(wishlist, targetId);
-            if (index >= 0)
-            {
-                return wishlist.Length - index; // The higher in the list, the greater the weight
-            }
+            if (index >= 0) return wishlist.Length - index; // The higher in the list, the greater the weight
         }
 
         return 0;

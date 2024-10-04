@@ -7,8 +7,7 @@ public class Hackathon
     private readonly HrManager _hrManager;
     private readonly HrDirector _hrDirector;
 
-    public Hackathon(List<TeamLead> teamLeads, List<Junior> juniors, HrManager hrManager,
-        HrDirector hrDirector)
+    public Hackathon(List<TeamLead> teamLeads, List<Junior> juniors, HrManager hrManager, HrDirector hrDirector)
     {
         _juniors = juniors;
         _teamLeads = teamLeads;
