@@ -2,26 +2,26 @@ namespace DreamTeamOptimizer.Core.Entities;
 
 public class Hackathon
 {
-    private IEnumerable<Employee> Juniors { get; }
-    private IEnumerable<Employee> TeamLeads { get; }
-    private HRManager HrManager { get; }
-    private HRDirector HrDirector { get; }
+    private readonly IEnumerable<Employee> _juniors;
+    private readonly IEnumerable<Employee> _teamLeads;
+    private readonly HrManager _hrManager;
+    private readonly HrDirector _hrDirector;
 
-    public Hackathon(IEnumerable<Employee> juniors, IEnumerable<Employee> teamLeads, HRManager hrManager,
-        HRDirector hrDirector)
+    public Hackathon(List<TeamLead> teamLeads, List<Junior> juniors, HrManager hrManager,
+        HrDirector hrDirector)
     {
-        Juniors = juniors;
-        TeamLeads = teamLeads;
-        HrManager = hrManager;
-        HrDirector = hrDirector;
+        _juniors = juniors;
+        _teamLeads = teamLeads;
+        _hrManager = hrManager;
+        _hrDirector = hrDirector;
     }
 
-    public double Start()
+    public double Conduct()
     {
-        var teamLeadsWishLists = HrManager.VoteEmployees(TeamLeads, Juniors);
-        var juniorsWishLists = HrManager.VoteEmployees(Juniors, TeamLeads);
-        var teams = HrManager.BuildTeams(TeamLeads, Juniors, teamLeadsWishLists, juniorsWishLists);
+        var teamLeadsWishLists = _hrManager.VoteEmployees(_teamLeads, _juniors);
+        var juniorsWishLists = _hrManager.VoteEmployees(_juniors, _teamLeads);
+        var teams = _hrManager.BuildTeams(_teamLeads, _juniors, teamLeadsWishLists, juniorsWishLists);
 
-        return HrDirector.CalculateDistributionHarmony(teams, teamLeadsWishLists, juniorsWishLists);
+        return _hrDirector.CalculateDistributionHarmony(teams, teamLeadsWishLists, juniorsWishLists);
     }
 }

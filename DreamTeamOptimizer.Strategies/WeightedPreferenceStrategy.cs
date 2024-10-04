@@ -74,11 +74,13 @@ public class WeightedPreferenceStrategy : IStrategy
     // Method for calculating preference weight
     private double GetWeightedPreference(int employeeId, int targetId, Dictionary<int, int[]> wishlists)
     {
-        if (wishlists.ContainsKey(employeeId))
+        if (wishlists.TryGetValue(employeeId, out var wishlist))
         {
-            var wishlist = wishlists[employeeId];
             var index = Array.IndexOf(wishlist, targetId);
-            if (index >= 0) return wishlist.Length - index; // The higher in the list, the greater the weight
+            if (index >= 0)
+            {
+                return wishlist.Length - index; // The higher in the list, the greater the weight
+            }
         }
 
         return 0;

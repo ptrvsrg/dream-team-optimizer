@@ -13,6 +13,6 @@ public class CsvLoader
         using var reader = new StreamReader(filePath);
         using var csv = new CsvReader(reader, config);
 
-        return new List<T>(csv.GetRecords<T>());
+        return csv.GetRecords<T>().ToList();
     }
 }

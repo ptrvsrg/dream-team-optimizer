@@ -4,5 +4,5 @@ public enum StrategyType
 {
     GaleShapley,
     BipartiteGraph,
-    WeightedPreference,
+    WeightedPreference
 }

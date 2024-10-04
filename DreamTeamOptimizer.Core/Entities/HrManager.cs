@@ -2,11 +2,11 @@ using DreamTeamOptimizer.Core.Interfaces;
 
 namespace DreamTeamOptimizer.Core.Entities;
 
-public class HRManager
+public class HrManager
 {
     private IStrategy Strategy { get; }
 
-    public HRManager(IStrategy strategy)
+    public HrManager(IStrategy strategy)
     {
         Strategy = strategy;
     }

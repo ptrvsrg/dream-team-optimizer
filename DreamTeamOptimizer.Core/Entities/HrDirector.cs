@@ -2,7 +2,7 @@ using DreamTeamOptimizer.Core.Exceptions;
 
 namespace DreamTeamOptimizer.Core.Entities;
 
-public class HRDirector
+public class HrDirector
 {
     public double CalculateDistributionHarmony(IEnumerable<Team> teams, IEnumerable<WishList> teamLeadsWishlists,
         IEnumerable<WishList> juniorsWishlists)
