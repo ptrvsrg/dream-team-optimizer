@@ -1,47 +1,44 @@
 name: Build and Test .NET
 
 on:
-  push:
-  pull_request:
-  workflow_dispatch:
+    push:
+    pull_request:
+    workflow_dispatch:
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build -o out --no-restore
-    - name: Test
-      run: dotnet test --verbosity normal
-    - name: Launch Gale-Shapley Strategy
-      run: |
-        ./out/DreamTeamOptimizer.ConsoleApp \
-        -j src/DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv \
-        -t src/DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv \
-        -n 1000 \
-        -s GaleShapley \
-        -c 4
-    - name: Launch Weighted Preference Strategy
-      run: |
-          ./out/DreamTeamOptimizer.ConsoleApp \
-          -j src/DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv \
-          -t src/DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv \
-          -n 1000 \
-          -s WeightedPreference \
-          -c 4
-    - name: Launch Bipartite Graph Strategy
-      run: |
-          ./out/DreamTeamOptimizer.ConsoleApp \
-          -j src/DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv \
-          -t src/DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv \
-          -n 1000 \
-          -s BipartiteGraph \
-          -c 4
+    build-and-test:
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout repository
+                uses: actions/checkout@v4
+            -   name: Setup .NET
+                uses: actions/setup-dotnet@v4
+                with:
+                    dotnet-version: 8.0.x
+            -   name: Restore dependencies
+                run: dotnet restore
+            -   name: Build
+                run: dotnet build -o out --no-restore
+            -   name: Test
+                run: dotnet test --verbosity normal
+            -   name: Launch Gale-Shapley Strategy
+                run: |
+                    export HACKATHON_HACKATHON_COUNT=1000
+                    export HACKATHON_JUNIORS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv
+                    export HACKATHON_TEAM_LEADS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv
+                    export HACKATHON_STRATEGY_TYPE=GaleShapley
+                    ./out/DreamTeamOptimizer.ConsoleApp
+            -   name: Launch Weighted Preference Strategy
+                run: |
+                    export HACKATHON_HACKATHON_COUNT=1000
+                    export HACKATHON_JUNIORS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv
+                    export HACKATHON_TEAM_LEADS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv
+                    export HACKATHON_STRATEGY_TYPE=WeightedPreference
+                    ./out/DreamTeamOptimizer.ConsoleApp
+            -   name: Launch Bipartite Graph Strategy
+                run: |
+                    export HACKATHON_HACKATHON_COUNT=1000
+                    export HACKATHON_JUNIORS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv
+                    export HACKATHON_TEAM_LEADS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv
+                    export HACKATHON_STRATEGY_TYPE=BipartiteGraph
+                    ./out/DreamTeamOptimizer.ConsoleApp

@@ -117,47 +117,27 @@ git clone https://github.com/ptrvsrg/dream-team-optimizer
 
 <h3>Launch</h3>
 
-Help message:
-
-```shell
-DreamTeamOptimizer.ConsoleApp 0.0.0+e97b0919eaffe5bc18c31b259d5ce9f1b684d11a
-Copyright (C) 2024 DreamTeamOptimizer.ConsoleApp
-
-  -j, --juniors        Required. Path to the juniors CSV file.
-
-  -t, --teamleads      Required. Path to the team leads CSV file.
-
-  -s, --strategy       (Default: GaleShapley) Strategy to use for team building (GaleShapley, ReverseGaleShapley, BipartiteGraph, WeightedPreference).
-
-  -n, --hackathons     (Default: 1000) Number of hackathons to conduct.
-
-  -c, --concurrency    (Default: 1) Number of threads.
-
-  --help               Display this help screen.
-
-  --version            Display version information.
-```
-
 <h4>Locally</h4>
 
-```shell
+```bash
 make build.console
-./out/console/DreamTeamOptimizer.ConsoleApp \
-  -j DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv \
-  -t DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv \
-  -s GaleShapley \
-  -c 4
+export HACKATHON_HACKATHON_COUNT=1000
+export HACKATHON_JUNIORS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv
+export HACKATHON_TEAM_LEADS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv
+export HACKATHON_STRATEGY_TYPE=GaleShapley
+./out/DreamTeamOptimizer.ConsoleApp
 ```
 
 <h4>Docker</h4>
 
-```shell
+```bash
 make build-image.console
-docker run -v "./DreamTeamOptimizer.ConsoleApp/example:/example" ptrvsrg/dream-team-optimizer-console \
-  -j /example/Juniors20.csv \
-  -t /example/Teamleads20.csv \
-  -s GaleShapley \
-  -c 4
+docker run \
+  -e HACKATHON_HACKATHON_COUNT=1000 \
+  -e HACKATHON_STRATEGY_TYPE=GaleShapley \
+  -e HACKATHON_JUNIORS_FILE_PATH=/example/Juniors20.csv \
+  -e HACKATHON_TEAM_LEADS_FILE_PATH=/example/Teamleads20.csv \
+  -v "./DreamTeamOptimizer.ConsoleApp/example:/example" ptrvsrg/dream-team-optimizer-console
 ```
 
 <h2 id="contribute">Contribute</h2>
