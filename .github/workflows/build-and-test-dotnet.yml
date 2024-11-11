@@ -20,7 +20,7 @@ jobs:
     - name: Build
       run: dotnet build -o out --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --verbosity normal
     - name: Launch Gale-Shapley Strategy
       run: |
         ./out/DreamTeamOptimizer.ConsoleApp \
