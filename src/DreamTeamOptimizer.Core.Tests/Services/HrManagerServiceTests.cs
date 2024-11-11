@@ -1,47 +1,23 @@
 using DreamTeamOptimizer.Core.Entities;
 using DreamTeamOptimizer.Core.Interfaces;
+using DreamTeamOptimizer.Core.Interfaces.IServices;
+using DreamTeamOptimizer.Core.Services;
 using Moq;
 using Xunit;
 
-namespace DreamTeamOptimizer.Core.Tests.Entities;
+namespace DreamTeamOptimizer.Core.Tests.Services;
 
-public class HrManagerTests
+public class HrManagerServiceTests
 {
     private readonly Mock<IStrategy> _strategyMock;
-    private readonly HrManager _hrManager;
-
-    public HrManagerTests()
+    private readonly IHrManagerService _service;
+    
+    public HrManagerServiceTests()
     {
         _strategyMock = new Mock<IStrategy>();
-        _hrManager = new HrManager(_strategyMock.Object);
+        _service = new HrManagerService(_strategyMock.Object);
     }
-
-    [Fact]
-    public void VoteEmployees_ShouldReturnCorrectWishLists()
-    {
-        // Prepare
-        var employees = new List<Employee>
-        {
-            new(1, "employee_1"),
-            new(2, "employee_2"),
-            new(3, "employee_3")
-        };
-        var variants = new List<Employee>
-        {
-            new(4, "employee_4"),
-            new(5, "employee_5"),
-            new(6, "employee_6")
-        };
-
-        // Act
-        var result = _hrManager.VoteEmployees(employees, variants);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(employees.Count, result.Count);
-        Assert.All(result, wishlist => Assert.Equal(variants.Count, wishlist.DesiredEmployees.Length));
-    }
-
+    
     [Fact]
     public void BuildTeams_ShouldCallStrategyBuildTeams()
     {
@@ -52,14 +28,14 @@ public class HrManagerTests
         var juniors = new List<Employee> { junior1 };
         var teamLeadsWishlists = new List<WishList>();
         var juniorsWishlists = new List<WishList>();
-
+    
         var expectedTeams = new List<Team> { new(teamLead1, junior1) };
         _strategyMock.Setup(s => s.BuildTeams(teamLeads, juniors, teamLeadsWishlists, juniorsWishlists))
             .Returns(expectedTeams);
-
+    
         // Act
-        var result = _hrManager.BuildTeams(teamLeads, juniors, teamLeadsWishlists, juniorsWishlists);
-
+        var result = _service.BuildTeams(teamLeads, juniors, teamLeadsWishlists, juniorsWishlists);
+    
         // Assert
         Assert.NotNull(result);
         Assert.Equal(expectedTeams.Count, result.Count);

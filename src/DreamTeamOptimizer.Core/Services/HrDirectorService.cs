@@ -1,13 +1,15 @@
+using DreamTeamOptimizer.Core.Entities;
 using DreamTeamOptimizer.Core.Exceptions;
+using DreamTeamOptimizer.Core.Interfaces.IServices;
 
-namespace DreamTeamOptimizer.Core.Entities;
+namespace DreamTeamOptimizer.Core.Services;
 
-public class HrDirector
+public class HrDirectorService: IHrDirectorService
 {
-    public double CalculateDistributionHarmony(IEnumerable<Team> teams, IEnumerable<WishList> teamLeadsWishlists,
-        IEnumerable<WishList> juniorsWishlists)
+    public double CalculateDistributionHarmony(List<Team> teams, List<WishList> teamLeadsWishlists,
+        List<WishList> juniorsWishlists)
     {
-        if (teams.Count() == 0) throw new NoTeamsException();
+        if (teams.Count == 0) throw new NoTeamsException();
 
         var teamLeadsWishlistsDict =
             teamLeadsWishlists.ToDictionary(w => w.EmployeeId, w => w.DesiredEmployees.ToList());
@@ -22,7 +24,7 @@ public class HrDirector
 
         return Helpers.Math.CalculateHarmonicMean(satisfactions);
     }
-
+    
     private double CalculateSatisfaction(int employeeId, int selectedEmployeeId, Dictionary<int, List<int>> wishlists)
     {
         if (!wishlists.TryGetValue(employeeId, out var wishlist)) throw new WishListNotFoundException(employeeId);
