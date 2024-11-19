@@ -1,0 +1,30 @@
+version: '3.8'
+
+networks:
+    hackathon-local-net:
+
+volumes:
+    hackathon-local-postgres-data:
+    hackathon-local-redis-data:
+    hackathon-local-minio-data:
+
+services:
+    postgres:
+        image: postgres:17-alpine3.20
+        container_name: hackathon-local-postgres
+        restart: unless-stopped
+        environment:
+            POSTGRES_USER: admin
+            POSTGRES_PASSWORD: password
+            POSTGRES_DB: hackathon
+        healthcheck:
+            test: [ "CMD-SHELL", "pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}" ]
+            interval: 5s
+            timeout: 5s
+            retries: 50
+        ports:
+            - 25432:5432
+        volumes:
+            - hackathon-local-postgres-data:/var/lib/postgresql/data
+        networks:
+            - hackathon-local-net

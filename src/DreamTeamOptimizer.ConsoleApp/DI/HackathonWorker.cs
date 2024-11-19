@@ -1,4 +1,5 @@
-using DreamTeamOptimizer.Core.Interfaces.IServices;
+using DreamTeamOptimizer.ConsoleApp.Interfaces.Services;
+using DreamTeamOptimizer.Core.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -7,6 +8,7 @@ namespace DreamTeamOptimizer.ConsoleApp.DI;
 
 public class HackathonWorker(
     IConfiguration configuration,
+    IEmployeeService employeeService,
     IHackathonService hackathonService,
     IHostApplicationLifetime appLifetime
 ) : IHostedService
@@ -15,32 +17,38 @@ public class HackathonWorker(
     {
         Task.Run(() =>
         {
-            Log.Information("Hackathons started");
-
-            var hackathonsCount = int.Parse(configuration["HACKATHON_HACKATHON_COUNT"]!);
-            var totalHarmonicity = 0.0;
-            var averageHarmonicity = 0.0;
-
-            for (int i = 0; i < hackathonsCount; i++)
+            try
             {
-                double harmonicity;
-                try
+                var hackathonsCount = int.Parse(configuration["HACKATHON_HACKATHON_COUNT"]!);
+                var totalHarmonicity = 0.0;
+                var averageHarmonicity = 0.0;
+
+                for (int i = 0; i < hackathonsCount; i++)
                 {
-                    harmonicity = hackathonService.Conduct();
-                }
-                catch (Exception e)
-                {
-                    Log.Error(e.Message);
-                    continue;
+                    Hackathon hackathon;
+                    try
+                    {
+                        hackathon = hackathonService.Conduct();
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error(e.Message);
+                        continue;
+                    }
+
+                    totalHarmonicity += hackathon.Result;
+                    averageHarmonicity = totalHarmonicity / (i + 1);
+                    Log.Information(
+                        $"hackathon #{hackathon.Id}: harmonicity={hackathon.Result  :F5}, average_harmonicity={averageHarmonicity:F5}");
                 }
 
-                totalHarmonicity += harmonicity;
-                averageHarmonicity = totalHarmonicity / i + 1;
-                Log.Information(
-                    $"Hackathon {i + 1}: harmonicity={harmonicity:F5}, average_harmonicity={averageHarmonicity:F5}");
+                Log.Information($"average harmonicity across all hackathons: {averageHarmonicity:F5}");
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message);
             }
 
-            Log.Information($"Average harmonicity across all hackathons: {averageHarmonicity:F5}");
             appLifetime.StopApplication();
         }, cancellationToken);
 
@@ -49,7 +57,6 @@ public class HackathonWorker(
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        Log.Information("Hackathons finished");
         return Task.CompletedTask;
     }
 }

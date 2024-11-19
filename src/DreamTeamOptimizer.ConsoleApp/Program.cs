@@ -1,8 +1,10 @@
 ﻿using DreamTeamOptimizer.ConsoleApp.DI;
+using DreamTeamOptimizer.ConsoleApp.Interfaces.Services;
+using DreamTeamOptimizer.ConsoleApp.Persistence;
+using DreamTeamOptimizer.ConsoleApp.Services;
 using DreamTeamOptimizer.Core.Interfaces;
-using DreamTeamOptimizer.Core.Interfaces.IServices;
-using DreamTeamOptimizer.Core.Services;
 using DreamTeamOptimizer.Strategies;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -27,25 +29,17 @@ Log.Logger = new LoggerConfiguration()
 
 var builder = Host.CreateApplicationBuilder(settings);
 builder.Logging.ClearProviders().AddSerilog();
-builder.Services.AddSingleton<IEmployeeService, EmployeeService>(_ =>
-    new EmployeeService(
-        builder.Configuration["HACKATHON_JUNIORS_FILE_PATH"]!,
-        builder.Configuration["HACKATHON_TEAM_LEADS_FILE_PATH"]!
-    ));
-builder.Services.AddSingleton<IWishListService, WishListService>();
-builder.Services.AddSingleton<IStrategy>(_ =>
-    {
-        if (StrategyType.TryParse(builder.Configuration["HACKATHON_STRATEGY_TYPE"], out StrategyType strategyType))
-        {
-            return StrategyFactory.NewStrategy(strategyType);
-        }
-        return new GaleShapleyStrategy();
-    }
-);
-builder.Services.AddSingleton<IHrManagerService, HrManagerService>();
-builder.Services.AddSingleton<IHrDirectorService, HrDirectorService>();
-builder.Services.AddSingleton<IHackathonService, HackathonService>();
+builder.Services.ConfigureRepositories(builder.Configuration);
+builder.Services.ConfigureServices();
+builder.Services.ConfigureStrategy(builder.Configuration);
 builder.Services.AddHostedService<HackathonWorker>();
 
 using var host = builder.Build();
+
+using (var scope = host.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    context.Database.Migrate();
+}
+
 host.Run();
