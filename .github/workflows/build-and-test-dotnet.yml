@@ -1,39 +1,74 @@
 name: Build and Test .NET
 
 on:
-  push:
-  pull_request:
-  workflow_dispatch:
+    push:
+    pull_request:
+    workflow_dispatch:
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build -o out --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
-    - name: Launch Gale-Shapley Strategy
-      run: |
-        ./out/DreamTeamOptimizer.ConsoleApp \
-        -j DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv \
-        -t DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv \
-        -n 1000 \
-        -s GaleShapley \
-        -c 4
-    - name: Launch Bipartite Graph With Rating Strategy
-      run: |
-        ./out/DreamTeamOptimizer.ConsoleApp \
-        -j DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv \
-        -t DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv \
-        -n 1000 \
-        -s BipartiteGraphWithRating \
-        -c 4
+    build-and-test:
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout repository
+                uses: actions/checkout@v4
+            -   name: Setup .NET
+                uses: actions/setup-dotnet@v4
+                with:
+                    dotnet-version: 8.0.x
+            -   name: Restore dependencies
+                run: dotnet restore
+            -   name: Build
+                run: dotnet build -o out --no-restore
+            -   name: Test
+                run: dotnet test --verbosity normal
+            -   name: Launch Gale-Shapley Strategy
+                run: |
+                    export HACKATHON_HACKATHON_COUNT=1000
+                    export HACKATHON_JUNIORS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv
+                    export HACKATHON_TEAM_LEADS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv
+                    export HACKATHON_STRATEGY_TYPE=GaleShapley
+                    cat <<EOF > appsettings.json
+                    {
+                        "Config": {
+                            "JuniorsFilePath": "$HACKATHON_JUNIORS_FILE_PATH",
+                            "TeamLeadsFilePath": "$HACKATHON_TEAM_LEADS_FILE_PATH",
+                            "Strategy": "$HACKATHON_STRATEGY_TYPE",
+                            "HackathonCount": $HACKATHON_HACKATHON_COUNT
+                        }
+                    }
+                    EOF
+                    ./out/DreamTeamOptimizer.ConsoleApp
+            -   name: Launch Weighted Preference Strategy
+                run: |
+                    export HACKATHON_HACKATHON_COUNT=1000
+                    export HACKATHON_JUNIORS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv
+                    export HACKATHON_TEAM_LEADS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv
+                    export HACKATHON_STRATEGY_TYPE=WeightedPreference
+                    cat <<EOF > appsettings.json
+                    {
+                      "Config": {
+                          "JuniorsFilePath": "$HACKATHON_JUNIORS_FILE_PATH",
+                          "TeamLeadsFilePath": "$HACKATHON_TEAM_LEADS_FILE_PATH",
+                          "Strategy": "$HACKATHON_STRATEGY_TYPE",
+                          "HackathonCount": $HACKATHON_HACKATHON_COUNT
+                      }
+                    }
+                    EOF
+                    dotnet ./out/DreamTeamOptimizer.ConsoleApp.dll
+            -   name: Launch Bipartite Graph Strategy
+                run: |
+                    export HACKATHON_HACKATHON_COUNT=1000
+                    export HACKATHON_JUNIORS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv
+                    export HACKATHON_TEAM_LEADS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv
+                    export HACKATHON_STRATEGY_TYPE=BipartiteGraph
+                    cat <<EOF > appsettings.json
+                    {
+                      "Config": {
+                          "JuniorsFilePath": "$HACKATHON_JUNIORS_FILE_PATH",
+                          "TeamLeadsFilePath": "$HACKATHON_TEAM_LEADS_FILE_PATH",
+                          "Strategy": "$HACKATHON_STRATEGY_TYPE",
+                          "HackathonCount": $HACKATHON_HACKATHON_COUNT
+                      }
+                    }
+                    EOF
+                    dotnet ./out/DreamTeamOptimizer.ConsoleApp.dll
