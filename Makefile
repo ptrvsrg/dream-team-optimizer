@@ -18,7 +18,7 @@ build.console:
 
 .PHONY: build-image.console
 build-image.console:
-	$(DOCKER) build -f DreamTeamOptimizer.ConsoleApp/Dockerfile -t $(DOCKER_IMAGE_PREFIX)-console .
+	$(DOCKER) build -f src/DreamTeamOptimizer.ConsoleApp/Dockerfile -t $(DOCKER_IMAGE_PREFIX)-console .
 
 .PHONY: prepare-hooks
 prepare-hooks:

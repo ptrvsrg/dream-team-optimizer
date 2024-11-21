@@ -27,6 +27,16 @@ jobs:
                     export HACKATHON_JUNIORS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv
                     export HACKATHON_TEAM_LEADS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv
                     export HACKATHON_STRATEGY_TYPE=GaleShapley
+                    cat <<EOF > appsettings.json
+                    {
+                        "Config": {
+                            "JuniorsFilePath": "$HACKATHON_JUNIORS_FILE_PATH",
+                            "TeamLeadsFilePath": "$HACKATHON_TEAM_LEADS_FILE_PATH",
+                            "Strategy": "$HACKATHON_STRATEGY_TYPE",
+                            "HackathonCount": $HACKATHON_HACKATHON_COUNT
+                        }
+                    }
+                    EOF
                     ./out/DreamTeamOptimizer.ConsoleApp
             -   name: Launch Weighted Preference Strategy
                 run: |
@@ -34,11 +44,31 @@ jobs:
                     export HACKATHON_JUNIORS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv
                     export HACKATHON_TEAM_LEADS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv
                     export HACKATHON_STRATEGY_TYPE=WeightedPreference
-                    ./out/DreamTeamOptimizer.ConsoleApp
+                    cat <<EOF > appsettings.json
+                    {
+                      "Config": {
+                          "JuniorsFilePath": "$HACKATHON_JUNIORS_FILE_PATH",
+                          "TeamLeadsFilePath": "$HACKATHON_TEAM_LEADS_FILE_PATH",
+                          "Strategy": "$HACKATHON_STRATEGY_TYPE",
+                          "HackathonCount": $HACKATHON_HACKATHON_COUNT
+                      }
+                    }
+                    EOF
+                    dotnet ./out/DreamTeamOptimizer.ConsoleApp.dll
             -   name: Launch Bipartite Graph Strategy
                 run: |
                     export HACKATHON_HACKATHON_COUNT=1000
                     export HACKATHON_JUNIORS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv
                     export HACKATHON_TEAM_LEADS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv
                     export HACKATHON_STRATEGY_TYPE=BipartiteGraph
-                    ./out/DreamTeamOptimizer.ConsoleApp
+                    cat <<EOF > appsettings.json
+                    {
+                      "Config": {
+                          "JuniorsFilePath": "$HACKATHON_JUNIORS_FILE_PATH",
+                          "TeamLeadsFilePath": "$HACKATHON_TEAM_LEADS_FILE_PATH",
+                          "Strategy": "$HACKATHON_STRATEGY_TYPE",
+                          "HackathonCount": $HACKATHON_HACKATHON_COUNT
+                      }
+                    }
+                    EOF
+                    dotnet ./out/DreamTeamOptimizer.ConsoleApp.dll

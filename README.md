@@ -121,11 +121,8 @@ git clone https://github.com/ptrvsrg/dream-team-optimizer
 
 ```bash
 make build.console
-export HACKATHON_HACKATHON_COUNT=1000
-export HACKATHON_JUNIORS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Juniors20.csv
-export HACKATHON_TEAM_LEADS_FILE_PATH=$(pwd)/src/DreamTeamOptimizer.ConsoleApp/example/Teamleads20.csv
-export HACKATHON_STRATEGY_TYPE=GaleShapley
-./out/DreamTeamOptimizer.ConsoleApp
+HACKATHON_CONFIG_PATH=./src/DreamTeamOptimizer.ConsoleApp/appsettings.json \
+  dotnet ./out/DreamTeamOptimizer.ConsoleApp.dll
 ```
 
 <h4>Docker</h4>
@@ -133,11 +130,8 @@ export HACKATHON_STRATEGY_TYPE=GaleShapley
 ```bash
 make build-image.console
 docker run \
-  -e HACKATHON_HACKATHON_COUNT=1000 \
-  -e HACKATHON_STRATEGY_TYPE=GaleShapley \
-  -e HACKATHON_JUNIORS_FILE_PATH=/example/Juniors20.csv \
-  -e HACKATHON_TEAM_LEADS_FILE_PATH=/example/Teamleads20.csv \
-  -v "./DreamTeamOptimizer.ConsoleApp/example:/example" ptrvsrg/dream-team-optimizer-console
+  -v "./src/DreamTeamOptimizer.ConsoleApp/appsettings.json:/app/appsettings.json" \
+  -v "./src/DreamTeamOptimizer.ConsoleApp/example:/app/example" ptrvsrg/dream-team-optimizer-console
 ```
 
 <h2 id="contribute">Contribute</h2>

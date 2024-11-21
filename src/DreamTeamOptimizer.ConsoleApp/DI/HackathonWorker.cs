@@ -1,12 +1,12 @@
 using DreamTeamOptimizer.Core.Interfaces.IServices;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Serilog;
 
 namespace DreamTeamOptimizer.ConsoleApp.DI;
 
 public class HackathonWorker(
-    IConfiguration configuration,
+    IOptions<Config.Config> config,
     IHackathonService hackathonService,
     IHostApplicationLifetime appLifetime
 ) : IHostedService
@@ -17,7 +17,7 @@ public class HackathonWorker(
         {
             Log.Information("Hackathons started");
 
-            var hackathonsCount = int.Parse(configuration["HACKATHON_HACKATHON_COUNT"]!);
+            var hackathonsCount = config.Value.HackathonCount;
             var totalHarmonicity = 0.0;
             var averageHarmonicity = 0.0;
 
@@ -35,7 +35,7 @@ public class HackathonWorker(
                 }
 
                 totalHarmonicity += harmonicity;
-                averageHarmonicity = totalHarmonicity / i + 1;
+                averageHarmonicity = totalHarmonicity / (i + 1);
                 Log.Information(
                     $"Hackathon {i + 1}: harmonicity={harmonicity:F5}, average_harmonicity={averageHarmonicity:F5}");
             }

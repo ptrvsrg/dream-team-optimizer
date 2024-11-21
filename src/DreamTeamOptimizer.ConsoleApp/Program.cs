@@ -1,4 +1,5 @@
-﻿using DreamTeamOptimizer.ConsoleApp.DI;
+﻿using DreamTeamOptimizer.ConsoleApp.Config;
+using DreamTeamOptimizer.ConsoleApp.DI;
 using DreamTeamOptimizer.Core.Interfaces;
 using DreamTeamOptimizer.Core.Interfaces.IServices;
 using DreamTeamOptimizer.Core.Services;
@@ -7,41 +8,44 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Events;
 
-HostApplicationBuilderSettings settings = new()
-{
-    Args = args,
-    Configuration = new ConfigurationManager(),
-    ContentRootPath = Directory.GetCurrentDirectory(),
-};
-settings.Configuration.AddEnvironmentVariables(prefix: "HACKATHON_");
+var builder = Host.CreateApplicationBuilder();
 
+// Setup logger
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
     .Enrich.FromLogContext()
     .WriteTo.Console()
     .CreateLogger();
-
-var builder = Host.CreateApplicationBuilder(settings);
 builder.Logging.ClearProviders().AddSerilog();
-builder.Services.AddSingleton<IEmployeeService, EmployeeService>(_ =>
-    new EmployeeService(
-        builder.Configuration["HACKATHON_JUNIORS_FILE_PATH"]!,
-        builder.Configuration["HACKATHON_TEAM_LEADS_FILE_PATH"]!
-    ));
-builder.Services.AddSingleton<IWishListService, WishListService>();
-builder.Services.AddSingleton<IStrategy>(_ =>
+
+// Setup configuration
+var configPath = Environment.GetEnvironmentVariable("HACKATHON_CONFIG_PATH") ?? "appsettings.json";
+builder.Configuration
+    .AddJsonFile(configPath, optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
+builder.Services.AddOptions<Config>()
+    .Bind(builder.Configuration.GetSection(nameof(Config)))
+    .ValidateDataAnnotations();
+
+builder.Services.AddSingleton<IStrategy>(provider =>
     {
-        if (StrategyType.TryParse(builder.Configuration["HACKATHON_STRATEGY_TYPE"], out StrategyType strategyType))
-        {
-            return StrategyFactory.NewStrategy(strategyType);
-        }
-        return new GaleShapleyStrategy();
+        var config = provider.GetService<IOptions<Config>>()!;
+        Log.Information($"Used strategy: {config.Value.Strategy.ToString()}");
+        return StrategyFactory.NewStrategy(config.Value.Strategy);
     }
 );
+builder.Services.AddSingleton<IEmployeeService, EmployeeService>(provider =>
+    {
+        var config = provider.GetService<IOptions<Config>>()!;
+        return new EmployeeService(config.Value.JuniorsFilePath, config.Value.TeamLeadsFilePath);
+    }
+);
+builder.Services.AddSingleton<IWishListService, WishListService>();
 builder.Services.AddSingleton<IHrManagerService, HrManagerService>();
 builder.Services.AddSingleton<IHrDirectorService, HrDirectorService>();
 builder.Services.AddSingleton<IHackathonService, HackathonService>();
