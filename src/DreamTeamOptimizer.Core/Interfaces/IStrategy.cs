@@ -1,4 +1,4 @@
-using DreamTeamOptimizer.Core.Entities;
+using DreamTeamOptimizer.Core.Models;
 
 namespace DreamTeamOptimizer.Core.Interfaces;
 

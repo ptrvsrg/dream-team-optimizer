@@ -1,4 +1,5 @@
-using DreamTeamOptimizer.Core.Interfaces.IServices;
+using DreamTeamOptimizer.ConsoleApp.Interfaces.Services;
+using DreamTeamOptimizer.Core.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Serilog;
@@ -7,6 +8,7 @@ namespace DreamTeamOptimizer.ConsoleApp.DI;
 
 public class HackathonWorker(
     IOptions<Config.Config> config,
+    IEmployeeService employeeService,
     IHackathonService hackathonService,
     IHostApplicationLifetime appLifetime
 ) : IHostedService
@@ -15,18 +17,16 @@ public class HackathonWorker(
     {
         Task.Run(() =>
         {
-            Log.Information("Hackathons started");
-
             var hackathonsCount = config.Value.HackathonCount;
             var totalHarmonicity = 0.0;
             var averageHarmonicity = 0.0;
 
             for (int i = 0; i < hackathonsCount; i++)
             {
-                double harmonicity;
+                Hackathon hackathon;
                 try
                 {
-                    harmonicity = hackathonService.Conduct();
+                    hackathon = hackathonService.Conduct();
                 }
                 catch (Exception e)
                 {
@@ -34,13 +34,13 @@ public class HackathonWorker(
                     continue;
                 }
 
-                totalHarmonicity += harmonicity;
+                totalHarmonicity += hackathon.Result;
                 averageHarmonicity = totalHarmonicity / (i + 1);
                 Log.Information(
-                    $"Hackathon {i + 1}: harmonicity={harmonicity:F5}, average_harmonicity={averageHarmonicity:F5}");
+                    $"hackathon #{hackathon.Id}: harmonicity={hackathon.Result  :F5}, average_harmonicity={averageHarmonicity:F5}");
             }
 
-            Log.Information($"Average harmonicity across all hackathons: {averageHarmonicity:F5}");
+            Log.Information($"average harmonicity across all hackathons: {averageHarmonicity:F5}");
             appLifetime.StopApplication();
         }, cancellationToken);
 
@@ -49,7 +49,6 @@ public class HackathonWorker(
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        Log.Information("Hackathons finished");
         return Task.CompletedTask;
     }
 }
