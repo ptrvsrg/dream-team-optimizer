@@ -8,13 +8,9 @@ namespace DreamTeamOptimizer.ConsoleApp.Persistence.Entities;
 [PrimaryKey(nameof(EmployeeId), nameof(HackathonId))]
 public class HackathonEmployee
 {
-    [Required]
-    [Column("employee_id")]
-    public int EmployeeId { get; set; }
-    public Employee Employee { get; set; } = null!;
-    
-    [Required]
-    [Column("hackathon_id")]
-    public int HackathonId { get; set; }
-    public Hackathon Hackathon { get; set; } = null!;
+    [Required] [Column("employee_id")] public virtual int EmployeeId { get; set; }
+    public virtual Employee Employee { get; set; } = null!;
+
+    [Required] [Column("hackathon_id")] public virtual int HackathonId { get; set; }
+    public virtual Hackathon Hackathon { get; set; } = null!;
 }

@@ -1,7 +1,8 @@
 using DreamTeamOptimizer.ConsoleApp.Persistence.Entities;
+using DreamTeamOptimizer.Core.Interfaces.Repositories;
 
 namespace DreamTeamOptimizer.ConsoleApp.Interfaces.Repositories;
 
-public interface IPreferenceRepository : IGenericRepository<Preference>
+public interface ITeamRepository: IGenericRepository<Team>
 {
 }

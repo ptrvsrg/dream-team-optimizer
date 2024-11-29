@@ -6,10 +6,11 @@ using DreamTeamOptimizer.ConsoleApp.Services.Mappers;
 using DreamTeamOptimizer.Core.Models;
 using Serilog;
 using Employee = DreamTeamOptimizer.Core.Models.Employee;
+using WishList = DreamTeamOptimizer.Core.Models.WishList;
 
 namespace DreamTeamOptimizer.ConsoleApp.Services;
 
-public class WishListService(IPreferenceRepository preferenceRepository) : IWishListService
+public class WishListService(IWishListRepository wishlistRepository) : IWishListService
 {
     public List<WishList> GenerateWishlists(List<Employee> employees, List<Employee> desiredEmployees, int hackathonId)
     {
@@ -25,10 +26,10 @@ public class WishListService(IPreferenceRepository preferenceRepository) : IWish
             wishlists.Add(new WishList(employee.Id, employeesIds));
         }
 
-        var preferences = WishListMapper.ToEntities(wishlists);
-        preferences.ForEach(p => p.HackathonId = hackathonId);
+        var wishlistEntities = WishListMapper.ToEntities(wishlists);
+        wishlistEntities.ForEach(p => p.HackathonId = hackathonId);
         
-        preferenceRepository.CreateAll(preferences);
+        wishlistRepository.CreateAll(wishlistEntities);
         
         return wishlists;
     }

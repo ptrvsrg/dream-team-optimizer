@@ -64,39 +64,6 @@ namespace DreamTeamOptimizer.ConsoleApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "preferences",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    employee_id = table.Column<int>(type: "integer", nullable: false),
-                    desired_employee_id = table.Column<int>(type: "integer", nullable: false),
-                    hackathon_id = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_preferences", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_preferences_employees_desired_employee_id",
-                        column: x => x.desired_employee_id,
-                        principalTable: "employees",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_preferences_employees_employee_id",
-                        column: x => x.employee_id,
-                        principalTable: "employees",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_preferences_hackathons_hackathon_id",
-                        column: x => x.hackathon_id,
-                        principalTable: "hackathons",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "satisfactions",
                 columns: table => new
                 {
@@ -156,25 +123,36 @@ namespace DreamTeamOptimizer.ConsoleApp.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "wish_lists",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    employee_id = table.Column<int>(type: "integer", nullable: false),
+                    desired_employees = table.Column<int[]>(type: "integer[]", nullable: false),
+                    hackathon_id = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_wish_lists", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_wish_lists_employees_employee_id",
+                        column: x => x.employee_id,
+                        principalTable: "employees",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_wish_lists_hackathons_hackathon_id",
+                        column: x => x.hackathon_id,
+                        principalTable: "hackathons",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_hackathons_employees_hackathon_id",
                 table: "hackathons_employees",
-                column: "hackathon_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_preferences_desired_employee_id",
-                table: "preferences",
-                column: "desired_employee_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_preferences_employee_id_desired_employee_id_hackathon_id",
-                table: "preferences",
-                columns: new[] { "employee_id", "desired_employee_id", "hackathon_id" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_preferences_hackathon_id",
-                table: "preferences",
                 column: "hackathon_id");
 
             migrationBuilder.CreateIndex(
@@ -203,6 +181,17 @@ namespace DreamTeamOptimizer.ConsoleApp.Migrations
                 name: "IX_teams_team_lead_id",
                 table: "teams",
                 column: "team_lead_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_wish_lists_employee_id_hackathon_id",
+                table: "wish_lists",
+                columns: new[] { "employee_id", "hackathon_id" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_wish_lists_hackathon_id",
+                table: "wish_lists",
+                column: "hackathon_id");
         }
 
         /// <inheritdoc />
@@ -212,13 +201,13 @@ namespace DreamTeamOptimizer.ConsoleApp.Migrations
                 name: "hackathons_employees");
 
             migrationBuilder.DropTable(
-                name: "preferences");
-
-            migrationBuilder.DropTable(
                 name: "satisfactions");
 
             migrationBuilder.DropTable(
                 name: "teams");
+
+            migrationBuilder.DropTable(
+                name: "wish_lists");
 
             migrationBuilder.DropTable(
                 name: "employees");

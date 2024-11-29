@@ -4,9 +4,9 @@ using DreamTeamOptimizer.Core.Persistence.Repositories;
 
 namespace DreamTeamOptimizer.ConsoleApp.Persistence.Repositories;
 
-public class EmployeeRepository : GenericRepository<Employee>, IEmployeeRepository
+public class WishListRepository: GenericRepository<WishList>, IWishListRepository
 {
-    public EmployeeRepository(AppDbContext context) : base(context)
+    public WishListRepository(AppDbContext dbContext): base(dbContext)
     {
     }
 }

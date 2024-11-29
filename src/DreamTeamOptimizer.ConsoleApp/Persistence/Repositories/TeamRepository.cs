@@ -1,22 +1,12 @@
 using DreamTeamOptimizer.ConsoleApp.Interfaces.Repositories;
 using DreamTeamOptimizer.ConsoleApp.Persistence.Entities;
+using DreamTeamOptimizer.Core.Persistence.Repositories;
 
 namespace DreamTeamOptimizer.ConsoleApp.Persistence.Repositories;
 
-public class TeamRepository(AppDbContext dbContext): ITeamRepositroy
+public class TeamRepository: GenericRepository<Team>, ITeamRepository
 {
-    public void Insert(Team team)
+    public TeamRepository(AppDbContext dbContext): base(dbContext)
     {
-        dbContext.Teams.Add(team);
-    }
-
-    public void InsertAll(List<Team> teams)
-    {
-        teams.ForEach(t => dbContext.Teams.Add(t));
-    }
-
-    public void Save()
-    {
-        dbContext.SaveChanges();
     }
 }

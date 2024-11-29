@@ -16,23 +16,23 @@ public class Employee
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Column("id")]
-    public int Id { get; }
-    
+    public virtual int Id { get; set; }
+
     [Required]
     [Column("name", TypeName = "text")]
-    public string Name { get; set; }
-    
+    public virtual string Name { get; set; }
+
     [Required]
     [Column("grade", TypeName = "text")]
-    public Grade Grade { get; set; }
-    
+    public virtual Grade Grade { get; set; }
+
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Column("created_at")]
-    public DateTime CreatedAt { get; }
-    
+    public virtual DateTime CreatedAt { get; }
+
     [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     [Column("updated_at")]
-    public DateTime UpdatedAt { get; }
+    public virtual DateTime UpdatedAt { get; }
 
-    public ICollection<Hackathon> Hackathons { get; } = new List<Hackathon>();
+    public virtual ICollection<Hackathon> Hackathons { get; } = new List<Hackathon>();
 }

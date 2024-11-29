@@ -10,37 +10,33 @@ namespace DreamTeamOptimizer.ConsoleApp.Services;
 
 public class EmployeeService(IEmployeeRepository employeeRepository) : IEmployeeService
 {
-    public void LoadJuniorsFromFile(string path)
-    {
-        Log.Information($"load juniors from file {path}");
-
-        var employeeModels = CsvLoader.Load<Employee>(path);
-        var employees = EmployeeMapper.ToEntities(employeeModels, Grade.JUNIOR);
-
-        employeeRepository.CreateAll(employees);
-    }
-
-    public void LoadTeamLeadsFromFile(string path)
-    {
-        Log.Information($"load team leads from file {path}");
-        
-        var employeeModels = CsvLoader.Load<Employee>(path);
-        var employees = EmployeeMapper.ToEntities(employeeModels, Grade.TEAM_LEAD);
-
-        employeeRepository.CreateAll(employees);
-    }
-
     public List<Employee> FindAllJuniors()
     {
         Log.Information("find all juniors");
-        var employees = employeeRepository.Find(e => e.Grade == Grade.JUNIOR);
-        return EmployeeMapper.ToModels(employees);
+        try
+        {
+            var employees = employeeRepository.Find(e => e.Grade == Grade.JUNIOR);
+            return EmployeeMapper.ToModels(employees);
+        }
+        catch (Exception e)
+        {
+            Log.Warning("find all juniors failed: " + e.Message);
+            return new List<Employee>();
+        }
     }
 
     public List<Employee> FindAllTeamLeads()
     {
         Log.Information("find all team leads");
-        var employees = employeeRepository.Find(e => e.Grade == Grade.TEAM_LEAD);
-        return EmployeeMapper.ToModels(employees);
+        try
+        {
+            var employees = employeeRepository.Find(e => e.Grade == Grade.TEAM_LEAD);
+            return EmployeeMapper.ToModels(employees);
+        }
+        catch (Exception e)
+        {
+            Log.Warning("find all team leads failed: " + e.Message);
+            return new List<Employee>();
+        }
     }
 }

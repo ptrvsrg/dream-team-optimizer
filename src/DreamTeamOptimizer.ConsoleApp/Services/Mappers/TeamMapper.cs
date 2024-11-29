@@ -17,4 +17,14 @@ public class TeamMapper
     {
         return teams.Select(ToEntity).ToList();
     }
+
+    public static Core.Models.Team ToModel(Team team)
+    {
+        return new Core.Models.Team(EmployeeMapper.ToModel(team.TeamLead), EmployeeMapper.ToModel(team.Junior));
+    }
+    
+    public static List<Core.Models.Team> ToModels(List<Team> teams)
+    {
+        return teams.Select(ToModel).ToList();
+    }
 }

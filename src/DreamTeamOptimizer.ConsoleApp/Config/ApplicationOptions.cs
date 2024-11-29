@@ -3,8 +3,10 @@ using DreamTeamOptimizer.Strategies;
 
 namespace DreamTeamOptimizer.ConsoleApp.Config;
 
-public class Config
+public class ApplicationOptions
 {
+    public const string Name = "Application";
+    
     [Required] 
     public string JuniorsFilePath { get; set; } = "";
     

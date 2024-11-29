@@ -8,7 +8,7 @@ using Serilog;
 
 namespace DreamTeamOptimizer.ConsoleApp.Services;
 
-public class HrManagerService(IStrategy strategy, ITeamRepositroy teamRepository) : IHrManagerService
+public class HrManagerService(IStrategy strategy, ITeamRepository teamRepository) : IHrManagerService
 {
     public List<Team> BuildTeams(List<Employee> teamLeads, List<Employee> juniors, List<WishList> teamLeadsWishlists,
         List<WishList> juniorsWishlists, int hackathonId)
@@ -20,8 +20,7 @@ public class HrManagerService(IStrategy strategy, ITeamRepositroy teamRepository
         var teams = TeamMapper.ToEntities(teamModels);
         teams.ForEach(t => t.HackathonId = hackathonId);
         
-        teamRepository.InsertAll(teams);
-        teamRepository.Save();
+        teamRepository.CreateAll(teams);
 
         return teamModels;
     }

@@ -16,7 +16,7 @@ namespace DreamTeamOptimizer.ConsoleApp.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0-rc.2.24474.1")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -85,39 +85,6 @@ namespace DreamTeamOptimizer.ConsoleApp.Migrations
                     b.ToTable("hackathons_employees");
                 });
 
-            modelBuilder.Entity("DreamTeamOptimizer.ConsoleApp.Persistence.Entities.Preference", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DesiredEmployeeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("desired_employee_id");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("employee_id");
-
-                    b.Property<int>("HackathonId")
-                        .HasColumnType("integer")
-                        .HasColumnName("hackathon_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DesiredEmployeeId");
-
-                    b.HasIndex("HackathonId");
-
-                    b.HasIndex("EmployeeId", "DesiredEmployeeId", "HackathonId")
-                        .IsUnique();
-
-                    b.ToTable("preferences");
-                });
-
             modelBuilder.Entity("DreamTeamOptimizer.ConsoleApp.Persistence.Entities.Satisfaction", b =>
                 {
                     b.Property<int>("Id")
@@ -182,6 +149,38 @@ namespace DreamTeamOptimizer.ConsoleApp.Migrations
                     b.ToTable("teams");
                 });
 
+            modelBuilder.Entity("DreamTeamOptimizer.ConsoleApp.Persistence.Entities.WishList", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.PrimitiveCollection<int[]>("DesiredEmployeeIds")
+                        .IsRequired()
+                        .HasColumnType("integer[]")
+                        .HasColumnName("desired_employees");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("employee_id");
+
+                    b.Property<int>("HackathonId")
+                        .HasColumnType("integer")
+                        .HasColumnName("hackathon_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HackathonId");
+
+                    b.HasIndex("EmployeeId", "HackathonId")
+                        .IsUnique();
+
+                    b.ToTable("wish_lists");
+                });
+
             modelBuilder.Entity("DreamTeamOptimizer.ConsoleApp.Persistence.Entities.HackathonEmployee", b =>
                 {
                     b.HasOne("DreamTeamOptimizer.ConsoleApp.Persistence.Entities.Employee", "Employee")
@@ -195,33 +194,6 @@ namespace DreamTeamOptimizer.ConsoleApp.Migrations
                         .HasForeignKey("HackathonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("Hackathon");
-                });
-
-            modelBuilder.Entity("DreamTeamOptimizer.ConsoleApp.Persistence.Entities.Preference", b =>
-                {
-                    b.HasOne("DreamTeamOptimizer.ConsoleApp.Persistence.Entities.Employee", "DesiredEmployee")
-                        .WithMany()
-                        .HasForeignKey("DesiredEmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DreamTeamOptimizer.ConsoleApp.Persistence.Entities.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DreamTeamOptimizer.ConsoleApp.Persistence.Entities.Hackathon", "Hackathon")
-                        .WithMany("Preferences")
-                        .HasForeignKey("HackathonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DesiredEmployee");
 
                     b.Navigation("Employee");
 
@@ -274,13 +246,32 @@ namespace DreamTeamOptimizer.ConsoleApp.Migrations
                     b.Navigation("TeamLead");
                 });
 
+            modelBuilder.Entity("DreamTeamOptimizer.ConsoleApp.Persistence.Entities.WishList", b =>
+                {
+                    b.HasOne("DreamTeamOptimizer.ConsoleApp.Persistence.Entities.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DreamTeamOptimizer.ConsoleApp.Persistence.Entities.Hackathon", "Hackathon")
+                        .WithMany("WishLists")
+                        .HasForeignKey("HackathonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Hackathon");
+                });
+
             modelBuilder.Entity("DreamTeamOptimizer.ConsoleApp.Persistence.Entities.Hackathon", b =>
                 {
-                    b.Navigation("Preferences");
-
                     b.Navigation("Satisfactions");
 
                     b.Navigation("Teams");
+
+                    b.Navigation("WishLists");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,41 +1,32 @@
 using DreamTeamOptimizer.ConsoleApp.Persistence.Entities;
 using DreamTeamOptimizer.Core.Models;
+using WishList = DreamTeamOptimizer.ConsoleApp.Persistence.Entities.WishList;
 
 namespace DreamTeamOptimizer.ConsoleApp.Services.Mappers;
 
 public class WishListMapper
 {
-    public static List<Preference> ToEntities(WishList wishList)
+    public static WishList ToEntity(Core.Models.WishList wishList)
     {
-        return wishList.DesiredEmployees.Select(de => new Preference
+        return new WishList
         {
             EmployeeId = wishList.EmployeeId,
-            DesiredEmployeeId = de
-        }).ToList();
+            DesiredEmployeeIds = wishList.DesiredEmployees
+        };
     }
 
-    public static List<Preference> ToEntities(List<WishList> wishLists)
+    public static List<WishList> ToEntities(List<Core.Models.WishList> wishLists)
     {
-        var preferences = new List<Preference>();
-        wishLists.ForEach(w => preferences.AddRange(ToEntities(w)));
-        return preferences;
+        return wishLists.Select(ToEntity).ToList();
     }
 
-    public static List<WishList> ToModels(List<Preference> preferences)
+    public static Core.Models.WishList ToModel(WishList wishList)
     {
-        var dict = new Dictionary<int, List<int>>();
+        return new Core.Models.WishList(wishList.EmployeeId, wishList.DesiredEmployeeIds); 
+    }
 
-        foreach (var preference in preferences)
-        {
-            if (!dict.TryGetValue(preference.EmployeeId, out var desiredEmployees))
-            {
-                desiredEmployees = new List<int>();
-            }
-            
-            desiredEmployees.Add(preference.DesiredEmployeeId);
-            dict.Add(preference.EmployeeId, desiredEmployees);
-        }
-
-        return dict.Select(e => new WishList(e.Key, e.Value.ToArray())).ToList();
+    public static List<Core.Models.WishList> ToModels(List<WishList> wishLists)
+    {
+        return wishLists.Select(ToModel).ToList();
     }
 }

@@ -26,8 +26,8 @@ public class HackathonService(
 
         // Save participants
         var employees = new List<Employee>()
-            .Concat(EmployeeMapper.ToEntities(juniors, Grade.JUNIOR))
-            .Concat(EmployeeMapper.ToEntities(teamLeads, Grade.TEAM_LEAD))
+            .Concat(EmployeeMapper.ToEntities(juniors))
+            .Concat(EmployeeMapper.ToEntities(teamLeads))
             .ToList();
 
         // Create hackathon
@@ -63,9 +63,6 @@ public class HackathonService(
                 // Complete hackathon
                 hackathon.Status = HackathonStatus.COMPLETED;
                 hackathonRepository.Update(hackathon);
-
-                tx.Commit();
-                return HackathonMapper.ToModel(hackathon);
             }
             catch (Exception)
             {
@@ -77,6 +74,25 @@ public class HackathonService(
 
                 throw;
             }
+            
+            tx.Commit();
+            return HackathonMapper.ToModel(hackathonRepository.FindById(hackathon.Id)!);
         }
+    }
+
+    public double CalculateAverageHarmonicity()
+    {
+        return hackathonRepository.FindAverageResult();
+    }
+
+    public Core.Models.Hackathon? FindById(int id)
+    {
+        var hackathon = hackathonRepository.FindById(id);
+        if (hackathon == null)
+        {
+            return null;
+        }
+        
+        return HackathonMapper.ToModel(hackathon);
     }
 }

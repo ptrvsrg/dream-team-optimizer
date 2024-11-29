@@ -1,10 +1,8 @@
 using DreamTeamOptimizer.ConsoleApp.Persistence.Entities;
+using DreamTeamOptimizer.Core.Interfaces.Repositories;
 
 namespace DreamTeamOptimizer.ConsoleApp.Interfaces.Repositories;
 
-public interface ITeamRepositroy
+public interface IWishListRepository : IGenericRepository<WishList>
 {
-    void Insert(Team team);
-    void InsertAll(List<Team> teams);
-    void Save();
 }

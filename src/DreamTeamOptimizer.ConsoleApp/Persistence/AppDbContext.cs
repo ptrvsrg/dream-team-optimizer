@@ -1,29 +1,24 @@
 using DreamTeamOptimizer.ConsoleApp.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.Extensions.Options;
 
 namespace DreamTeamOptimizer.ConsoleApp.Persistence;
 
 public class AppDbContext : DbContext
 {
     public DbSet<Employee> Employees { get; set; }
-    public DbSet<Preference> Preferences { get; set; }
+    public DbSet<WishList> Preferences { get; set; }
     public DbSet<Team> Teams { get; set; }
     public DbSet<Satisfaction> Satisfactions { get; set; }
     public DbSet<Hackathon> Hackathons { get; set; }
-
+    
     public AppDbContext()
     {
     }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
-    }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        var connectionString = "Host=localhost;Port=25432;Database=hackathon;Username=admin;Password=password";
-        optionsBuilder.UseNpgsql(connectionString);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -64,25 +59,25 @@ public class AppDbContext : DbContext
                     .HasForeignKey(he => he.HackathonId)
             );
         modelBuilder.Entity<Hackathon>()
-            .HasMany(e => e.Preferences)
+            .HasMany(e => e.WishLists)
             .WithOne(p => p.Hackathon);
         modelBuilder.Entity<Hackathon>()
-            .HasMany(e => e.Preferences)
+            .HasMany(e => e.WishLists)
             .WithOne(p => p.Hackathon);
         modelBuilder.Entity<Hackathon>()
-            .HasMany(e => e.Preferences)
+            .HasMany(e => e.WishLists)
             .WithOne(p => p.Hackathon);
 
         // Preference
-        modelBuilder.Entity<Preference>()
+        modelBuilder.Entity<WishList>()
             .HasKey(p => p.Id);
-        modelBuilder.Entity<Preference>()
+        modelBuilder.Entity<WishList>()
             .HasOne(p => p.Employee)
             .WithMany()
             .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<Preference>()
-            .HasOne(p => p.DesiredEmployee)
-            .WithMany()
+        modelBuilder.Entity<WishList>()
+            .HasOne(t => t.Hackathon)
+            .WithMany(h => h.WishLists)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Satisfaction
@@ -111,18 +106,6 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Team>()
             .HasOne(t => t.Hackathon)
             .WithMany(h => h.Teams)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        // Team
-        modelBuilder.Entity<Satisfaction>()
-            .HasKey(t => t.Id);
-        modelBuilder.Entity<Satisfaction>()
-            .HasOne(t => t.Employee)
-            .WithMany()
-            .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<Satisfaction>()
-            .HasOne(t => t.Hackathon)
-            .WithMany(h => h.Satisfactions)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
