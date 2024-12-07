@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DreamTeamOptimizer.Core", "src\DreamTeamOptimizer.Core\DreamTeamOptimizer.Core.csproj", "{AF0C9267-AFB6-4485-AE2E-8D5858E62756}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DreamTeamOptimizer.MsHrManager", "src\DreamTeamOptimizer.MsHrManager\DreamTeamOptimizer.MsHrManager.csproj", "{4046B731-E3C4-4A98-A877-642D92165FF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DreamTeamOptimizer.Strategies", "src\DreamTeamOptimizer.Strategies\DreamTeamOptimizer.Strategies.csproj", "{E056473B-E41B-477E-8401-EEFCD7E1255F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DreamTeamOptimizer.MsHrManager.Tests", "tests\DreamTeamOptimizer.MsHrManager.Tests\DreamTeamOptimizer.MsHrManager.Tests.csproj", "{E34D39F4-1643-45F0-B3C4-7CA72F79DC22}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DreamTeamOptimizer.Core.Tests", "tests\DreamTeamOptimizer.Core.Tests\DreamTeamOptimizer.Core.Tests.csproj", "{94BF75A4-C0A6-4A6E-993C-E8FD6C1A0CA9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AF0C9267-AFB6-4485-AE2E-8D5858E62756}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF0C9267-AFB6-4485-AE2E-8D5858E62756}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF0C9267-AFB6-4485-AE2E-8D5858E62756}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF0C9267-AFB6-4485-AE2E-8D5858E62756}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4046B731-E3C4-4A98-A877-642D92165FF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4046B731-E3C4-4A98-A877-642D92165FF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4046B731-E3C4-4A98-A877-642D92165FF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4046B731-E3C4-4A98-A877-642D92165FF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E056473B-E41B-477E-8401-EEFCD7E1255F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E056473B-E41B-477E-8401-EEFCD7E1255F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E056473B-E41B-477E-8401-EEFCD7E1255F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E056473B-E41B-477E-8401-EEFCD7E1255F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E34D39F4-1643-45F0-B3C4-7CA72F79DC22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E34D39F4-1643-45F0-B3C4-7CA72F79DC22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E34D39F4-1643-45F0-B3C4-7CA72F79DC22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E34D39F4-1643-45F0-B3C4-7CA72F79DC22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94BF75A4-C0A6-4A6E-993C-E8FD6C1A0CA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94BF75A4-C0A6-4A6E-993C-E8FD6C1A0CA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94BF75A4-C0A6-4A6E-993C-E8FD6C1A0CA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94BF75A4-C0A6-4A6E-993C-E8FD6C1A0CA9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

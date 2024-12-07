@@ -1,3 +1,3 @@
 namespace DreamTeamOptimizer.Core.Models;
 
-public record Team(Employee TeamLead, Employee Junior);
+public record Team(int TeamLeadId, int JuniorId);

@@ -6,7 +6,7 @@ namespace DreamTeamOptimizer.Core.Persistence.Repositories;
 public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
 {
     private readonly DbContext _context;
-    private readonly  DbSet<TEntity> _dbSet;
+    private readonly DbSet<TEntity> _dbSet;
 
     public GenericRepository(DbContext context)
     {
@@ -50,10 +50,7 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
 
     public virtual void Remove(TEntity item)
     {
-        if (_context.Entry(item).State == EntityState.Detached)
-        {
-            _dbSet.Attach(item);
-        }
+        if (_context.Entry(item).State == EntityState.Detached) _dbSet.Attach(item);
 
         _dbSet.Remove(item);
         _context.SaveChanges();
@@ -61,7 +58,7 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
 
     public virtual void Remove(object id)
     {
-        TEntity item = _dbSet.Find(id)!;
+        var item = _dbSet.Find(id)!;
         Remove(item);
     }
 }

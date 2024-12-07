@@ -8,8 +8,8 @@ public class TeamMapper
     {
         return new Team
         {
-            TeamLeadId = team.TeamLead.Id,
-            JuniorId = team.Junior.Id
+            TeamLeadId = team.TeamLeadId,
+            JuniorId = team.JuniorId
         };
     }
 
@@ -20,7 +20,7 @@ public class TeamMapper
 
     public static Core.Models.Team ToModel(Team team)
     {
-        return new Core.Models.Team(EmployeeMapper.ToModel(team.TeamLead), EmployeeMapper.ToModel(team.Junior));
+        return new Core.Models.Team(team.TeamLead.Id, team.Junior.Id);
     }
     
     public static List<Core.Models.Team> ToModels(List<Team> teams)
