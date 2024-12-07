@@ -1,5 +1,5 @@
 using DreamTeamOptimizer.ConsoleApp.Exceptions;
-using DreamTeamOptimizer.ConsoleApp.Interfaces.Repositories;
+using DreamTeamOptimizer.Core.Interfaces.Repositories;
 using DreamTeamOptimizer.ConsoleApp.Interfaces.Services;
 using DreamTeamOptimizer.ConsoleApp.Services.Mappers;
 using DreamTeamOptimizer.Core.Models;

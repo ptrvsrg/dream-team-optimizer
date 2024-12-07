@@ -1,5 +1,4 @@
-using DreamTeamOptimizer.ConsoleApp.Persistence;
-using DreamTeamOptimizer.ConsoleApp.Persistence.Entities;
+using DreamTeamOptimizer.Core.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Testcontainers.PostgreSql;
 using Xunit;

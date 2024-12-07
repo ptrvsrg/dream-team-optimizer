@@ -1,9 +1,9 @@
-using DreamTeamOptimizer.ConsoleApp.Interfaces.Repositories;
-using DreamTeamOptimizer.ConsoleApp.Persistence.Entities;
+using DreamTeamOptimizer.Core.Interfaces.Repositories;
+using DreamTeamOptimizer.Core.Persistence.Entities;
 using DreamTeamOptimizer.Core.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace DreamTeamOptimizer.ConsoleApp.Persistence.Repositories;
+namespace DreamTeamOptimizer.Core.Persistence.Repositories;
 
 public class HackathonRepository : GenericRepository<Hackathon>, IHackathonRepository
 {

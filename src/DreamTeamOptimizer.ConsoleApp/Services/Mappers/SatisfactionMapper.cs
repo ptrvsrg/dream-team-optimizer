@@ -1,4 +1,4 @@
-using DreamTeamOptimizer.ConsoleApp.Persistence.Entities;
+using DreamTeamOptimizer.Core.Persistence.Entities;
 
 namespace DreamTeamOptimizer.ConsoleApp.Services.Mappers;
 

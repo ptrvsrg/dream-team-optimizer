@@ -1,7 +1,6 @@
-using DreamTeamOptimizer.ConsoleApp.Helpers;
-using DreamTeamOptimizer.ConsoleApp.Interfaces.Repositories;
+using DreamTeamOptimizer.Core.Interfaces.Repositories;
 using DreamTeamOptimizer.ConsoleApp.Interfaces.Services;
-using DreamTeamOptimizer.ConsoleApp.Persistence.Entities;
+using DreamTeamOptimizer.Core.Persistence.Entities;
 using DreamTeamOptimizer.ConsoleApp.Services.Mappers;
 using Serilog;
 using Employee = DreamTeamOptimizer.Core.Models.Employee;

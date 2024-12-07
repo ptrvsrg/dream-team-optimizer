@@ -1,7 +1,7 @@
 using DreamTeamOptimizer.ConsoleApp.Interfaces.Services;
-using DreamTeamOptimizer.ConsoleApp.Persistence;
-using DreamTeamOptimizer.ConsoleApp.Persistence.Entities;
-using DreamTeamOptimizer.ConsoleApp.Persistence.Repositories;
+using DreamTeamOptimizer.Core.Persistence;
+using DreamTeamOptimizer.Core.Persistence.Entities;
+using DreamTeamOptimizer.Core.Persistence.Repositories;
 using DreamTeamOptimizer.ConsoleApp.Services;
 using DreamTeamOptimizer.ConsoleApp.Services.Mappers;
 using DreamTeamOptimizer.Strategies;
@@ -12,7 +12,7 @@ using Xunit;
 namespace DreamTeamOptimizer.ConsoleApp.Tests.Integration.Services;
 
 [Collection("IntegrationTests")]
-public class HackathonServiceTest : IClassFixture<IntegrationTestFactory>
+public class HackathonServiceTest : IClassFixture<IntegrationTestFactory>, IDisposable
 {
     private readonly AppDbContext _dbContext;
     private readonly IHackathonService _service;
@@ -36,6 +36,13 @@ public class HackathonServiceTest : IClassFixture<IntegrationTestFactory>
 
         _service = new HackathonService(_dbContext, hackathonRepository, employeeService, wishListService,
             hrManagerService, hrDirectorService);
+    }
+    
+    // After each test
+    public void Dispose()
+    {
+        _dbContext.Set<Hackathon>().RemoveRange();
+        _dbContext.ChangeTracker.Clear();
     }
 
     [Fact]
@@ -67,10 +74,6 @@ public class HackathonServiceTest : IClassFixture<IntegrationTestFactory>
             .BeEquivalentTo(
                 TeamMapper.ToModels(dbHackathon.Teams.ToList())
             );
-
-        // Clean
-        _dbContext.Set<Hackathon>().Remove(dbHackathon);
-        _dbContext.ChangeTracker.Clear();
     }
 
     [Fact]
@@ -87,10 +90,5 @@ public class HackathonServiceTest : IClassFixture<IntegrationTestFactory>
 
         // Assert
         actualHackathon.Should().BeEquivalentTo(expectedHackathon);
-
-        // Clean
-        var dbHackathon = _dbContext.Set<Hackathon>().Find(expectedHackathon.Id)!;
-        _dbContext.Set<Hackathon>().Remove(dbHackathon);
-        _dbContext.ChangeTracker.Clear();
     }
 }

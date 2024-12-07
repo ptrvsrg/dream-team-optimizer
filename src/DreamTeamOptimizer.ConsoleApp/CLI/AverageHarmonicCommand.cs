@@ -17,16 +17,12 @@ public class AverageHarmonicCommand
 
     private static Task Handle()
     {
-        var builder = Host.CreateApplicationBuilder();
-
-        builder.ConfigureConfiguration();
-        builder.ConfigureLogger();
-        builder.ConfigureStrategy();
-        builder.ConfigureRepositories();
-        builder.ConfigureServices();
         
-        builder.Services.AddHostedService<AverageHarmonicWorker>();
-        
-        return builder.Build().MigrateDatabases().RunAsync();
+        return Host
+            .CreateApplicationBuilder()
+            .ConfigureAll<AverageHarmonicWorker>()
+            .Build()
+            .MigrateDatabases()
+            .RunAsync();
     }
 }

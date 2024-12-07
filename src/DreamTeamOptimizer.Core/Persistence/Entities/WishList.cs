@@ -2,11 +2,11 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace DreamTeamOptimizer.ConsoleApp.Persistence.Entities;
+namespace DreamTeamOptimizer.Core.Persistence.Entities;
 
-[Table("satisfactions")]
+[Table("wish_lists")]
 [Index(nameof(EmployeeId), nameof(HackathonId), IsUnique = true)]
-public class Satisfaction
+public class WishList
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -16,9 +16,10 @@ public class Satisfaction
     [Required] [Column("employee_id")] public virtual int EmployeeId { get; set; }
     public virtual Employee Employee { get; set; }
 
+    [Required]
+    [Column("desired_employees")]
+    public virtual int[] DesiredEmployeeIds { get; set; }
+
     [Required] [Column("hackathon_id")] public virtual int HackathonId { get; set; }
     public virtual Hackathon Hackathon { get; set; }
-
-    [Column("rank", TypeName = "double precision")]
-    public virtual double Rank { get; set; }
 }

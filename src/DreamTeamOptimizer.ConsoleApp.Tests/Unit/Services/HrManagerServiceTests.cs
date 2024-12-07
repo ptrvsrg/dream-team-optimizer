@@ -1,4 +1,4 @@
-using DreamTeamOptimizer.ConsoleApp.Interfaces.Repositories;
+using DreamTeamOptimizer.Core.Interfaces.Repositories;
 using DreamTeamOptimizer.ConsoleApp.Interfaces.Services;
 using DreamTeamOptimizer.Core.Models;
 using DreamTeamOptimizer.ConsoleApp.Services;

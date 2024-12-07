@@ -17,16 +17,11 @@ public class ConductCommand
 
     private static Task Handle()
     {
-        var builder = Host.CreateApplicationBuilder();
-        
-        builder.ConfigureConfiguration();
-        builder.ConfigureLogger();
-        builder.ConfigureStrategy();
-        builder.ConfigureRepositories();
-        builder.ConfigureServices();
-        
-        builder.Services.AddHostedService<HackathonConductWorker>();
-        
-        return builder.Build().MigrateDatabases().RunAsync();
+        return Host
+            .CreateApplicationBuilder()
+            .ConfigureAll<HackathonConductWorker>()
+            .Build()
+            .MigrateDatabases()
+            .RunAsync();
     }
 }

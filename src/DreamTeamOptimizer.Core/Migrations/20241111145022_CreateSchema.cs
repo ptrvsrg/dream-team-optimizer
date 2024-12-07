@@ -3,7 +3,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace DreamTeamOptimizer.ConsoleApp.Migrations
+namespace DreamTeamOptimizer.Core.Migrations
 {
     /// <inheritdoc />
     public partial class CreateSchema : Migration

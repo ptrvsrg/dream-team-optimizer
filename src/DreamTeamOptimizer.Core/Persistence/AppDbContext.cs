@@ -1,14 +1,13 @@
-using DreamTeamOptimizer.ConsoleApp.Persistence.Entities;
+using DreamTeamOptimizer.Core.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Microsoft.Extensions.Options;
 
-namespace DreamTeamOptimizer.ConsoleApp.Persistence;
+namespace DreamTeamOptimizer.Core.Persistence;
 
 public class AppDbContext : DbContext
 {
     public DbSet<Employee> Employees { get; set; }
-    public DbSet<WishList> Preferences { get; set; }
+    public DbSet<WishList> WishLists { get; set; }
     public DbSet<Team> Teams { get; set; }
     public DbSet<Satisfaction> Satisfactions { get; set; }
     public DbSet<Hackathon> Hackathons { get; set; }

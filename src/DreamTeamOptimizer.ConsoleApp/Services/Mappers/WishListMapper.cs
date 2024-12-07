@@ -1,6 +1,4 @@
-using DreamTeamOptimizer.ConsoleApp.Persistence.Entities;
-using DreamTeamOptimizer.Core.Models;
-using WishList = DreamTeamOptimizer.ConsoleApp.Persistence.Entities.WishList;
+using WishList = DreamTeamOptimizer.Core.Persistence.Entities.WishList;
 
 namespace DreamTeamOptimizer.ConsoleApp.Services.Mappers;
 

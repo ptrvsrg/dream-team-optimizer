@@ -1,9 +1,9 @@
-﻿using DreamTeamOptimizer.ConsoleApp.Persistence.Entities;
+﻿using DreamTeamOptimizer.Core.Persistence.Entities;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace DreamTeamOptimizer.ConsoleApp.Migrations
+namespace DreamTeamOptimizer.Core.Migrations
 {
     /// <inheritdoc />
     public partial class InsertData : Migration

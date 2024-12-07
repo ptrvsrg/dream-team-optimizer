@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DreamTeamOptimizer.ConsoleApp.Persistence.Entities;
+namespace DreamTeamOptimizer.Core.Persistence.Entities;
 
 public enum HackathonStatus
 {

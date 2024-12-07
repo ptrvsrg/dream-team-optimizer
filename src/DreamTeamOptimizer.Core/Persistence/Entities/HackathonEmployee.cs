@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace DreamTeamOptimizer.ConsoleApp.Persistence.Entities;
+namespace DreamTeamOptimizer.Core.Persistence.Entities;
 
 [Table("hackathons_employees")]
 [PrimaryKey(nameof(EmployeeId), nameof(HackathonId))]

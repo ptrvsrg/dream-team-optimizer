@@ -1,13 +1,13 @@
-using DreamTeamOptimizer.ConsoleApp.Interfaces.Repositories;
+using DreamTeamOptimizer.Core.Interfaces.Repositories;
 using DreamTeamOptimizer.ConsoleApp.Interfaces.Services;
-using DreamTeamOptimizer.ConsoleApp.Persistence;
+using DreamTeamOptimizer.Core.Persistence;
 using DreamTeamOptimizer.Core.Models;
 using DreamTeamOptimizer.ConsoleApp.Services;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Moq;
 using Xunit;
-using Hackathon = DreamTeamOptimizer.ConsoleApp.Persistence.Entities.Hackathon;
+using Hackathon = DreamTeamOptimizer.Core.Persistence.Entities.Hackathon;
 
 namespace DreamTeamOptimizer.ConsoleApp.Tests.Unit.Services;
 
@@ -390,7 +390,7 @@ public class HackathonServiceTests : IClassFixture<HackathonServiceFixture>
         var hackathonEntity = new Hackathon
         {
             Id = hackathonId,
-            Status = Persistence.Entities.HackathonStatus.COMPLETED,
+            Status = Core.Persistence.Entities.HackathonStatus.COMPLETED,
             Result = 5.0
         };
         _hackathonRepositoryMock

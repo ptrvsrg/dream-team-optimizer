@@ -1,4 +1,4 @@
-using DreamTeamOptimizer.ConsoleApp.Interfaces.Repositories;
+using DreamTeamOptimizer.Core.Interfaces.Repositories;
 using DreamTeamOptimizer.ConsoleApp.Interfaces.Services;
 using DreamTeamOptimizer.ConsoleApp.Services;
 using DreamTeamOptimizer.Core.Models;
@@ -25,7 +25,7 @@ public class WishListServiceTests : IClassFixture<WishListServiceFixture>
     public void GetWishlists_ShouldHaveCorrectList()
     {
         // Prepare
-        _repositoryMock.Setup(s => s.CreateAll(It.IsAny<List<Persistence.Entities.WishList>>()));
+        _repositoryMock.Setup(s => s.CreateAll(It.IsAny<List<Core.Persistence.Entities.WishList>>()));
         
         // Act
         var wishlists = _service.GenerateWishlists(_fixture.Employees, _fixture.DesiredEmployees, _fixture.HackathonId);
@@ -41,7 +41,7 @@ public class WishListServiceTests : IClassFixture<WishListServiceFixture>
                 .And.BeEquivalentTo(_fixture.DesiredEmployeeIds);
         }
         
-        _repositoryMock.Verify(r => r.CreateAll(It.IsAny<List<Persistence.Entities.WishList>>()), Times.Once);
+        _repositoryMock.Verify(r => r.CreateAll(It.IsAny<List<Core.Persistence.Entities.WishList>>()), Times.Once);
     }
 }
 

@@ -1,5 +1,5 @@
 using DreamTeamOptimizer.ConsoleApp.Exceptions;
-using DreamTeamOptimizer.ConsoleApp.Interfaces.Repositories;
+using DreamTeamOptimizer.Core.Interfaces.Repositories;
 using DreamTeamOptimizer.ConsoleApp.Interfaces.Services;
 using DreamTeamOptimizer.Core.Models;
 using DreamTeamOptimizer.ConsoleApp.Services;
@@ -26,7 +26,7 @@ public class HrDirectorServiceTests : IClassFixture<HrDirectorServiceFixture>
     public void CalculateDistributionHarmony_ValidInputs_ReturnsCorrectDistributionHarmony()
     {
         // Prepare
-        _satisfactionRepositoryMock.Setup(r => r.CreateAll(It.IsAny<List<Persistence.Entities.Satisfaction>>()));
+        _satisfactionRepositoryMock.Setup(r => r.CreateAll(It.IsAny<List<Core.Persistence.Entities.Satisfaction>>()));
 
         // Act
         var result = _service.CalculateSatisfactions(_fixture.Teams, _fixture.TeamLeadsWishlists,
@@ -38,7 +38,7 @@ public class HrDirectorServiceTests : IClassFixture<HrDirectorServiceFixture>
             .HaveCount(_fixture.Satisfactions.Count)
             .And.BeEquivalentTo(_fixture.Satisfactions);
 
-        _satisfactionRepositoryMock.Verify(r => r.CreateAll(It.IsAny<List<Persistence.Entities.Satisfaction>>()),
+        _satisfactionRepositoryMock.Verify(r => r.CreateAll(It.IsAny<List<Core.Persistence.Entities.Satisfaction>>()),
             Times.Once);
     }
 

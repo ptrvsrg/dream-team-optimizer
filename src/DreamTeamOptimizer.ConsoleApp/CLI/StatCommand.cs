@@ -20,16 +20,10 @@ public class StatCommand
 
     private static Task Handle(int hackathonId)
     {
-        var builder = Host.CreateApplicationBuilder();
+        var builder = Host
+            .CreateApplicationBuilder()
+            .ConfigureAll<HackathonConductWorker>();
         builder.Configuration.AddCommandLine(["--hackathonId", hackathonId.ToString()]);
-        
-        builder.ConfigureConfiguration();
-        builder.ConfigureLogger();
-        builder.ConfigureStrategy();
-        builder.ConfigureRepositories();
-        builder.ConfigureServices();
-        
-        builder.Services.AddHostedService<HackathonStatWorker>();
 
         return builder
             .Build()
