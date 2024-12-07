@@ -119,19 +119,25 @@ git clone https://github.com/ptrvsrg/dream-team-optimizer
 
 <h4>Locally</h4>
 
+Conduct hackathon:
 ```bash
 make build.console
 HACKATHON_CONFIG_PATH=./src/DreamTeamOptimizer.ConsoleApp/appsettings.json \
-  dotnet ./out/DreamTeamOptimizer.ConsoleApp.dll
+  dotnet ./out/DreamTeamOptimizer.ConsoleApp.dll conduct
 ```
 
-<h4>Docker</h4>
-
+Print statistic after hackathon by ID:
 ```bash
-make build-image.console
-docker run \
-  -v "./src/DreamTeamOptimizer.ConsoleApp/appsettings.json:/app/appsettings.json" \
-  -v "./src/DreamTeamOptimizer.ConsoleApp/example:/app/example" ptrvsrg/dream-team-optimizer-console
+make build.console
+HACKATHON_CONFIG_PATH=./src/DreamTeamOptimizer.ConsoleApp/appsettings.json \
+  dotnet ./out/DreamTeamOptimizer.ConsoleApp.dll stat <ID>
+```
+
+Print average harmonicity:
+```bash
+make build.console
+HACKATHON_CONFIG_PATH=./src/DreamTeamOptimizer.ConsoleApp/appsettings.json \
+  dotnet ./out/DreamTeamOptimizer.ConsoleApp.dll average-harmonic
 ```
 
 <h2 id="contribute">Contribute</h2>

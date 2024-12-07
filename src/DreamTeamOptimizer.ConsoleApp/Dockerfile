@@ -19,7 +19,7 @@ RUN dotnet publish DreamTeamOptimizer.ConsoleApp.sln \
     --no-restore
 
 # Run application
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine as runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
 
 WORKDIR /app
 
