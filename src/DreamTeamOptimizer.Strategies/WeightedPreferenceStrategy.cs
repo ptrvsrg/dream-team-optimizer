@@ -67,7 +67,7 @@ public class WeightedPreferenceStrategy : IStrategy
         {
             var teamLead = teamLeadsDict[match.Key];
             var junior = juniorsDict[match.Value];
-            return new Team(teamLead, junior);
+            return new Team(teamLead.Id, junior.Id);
         }).ToList();
     }
 

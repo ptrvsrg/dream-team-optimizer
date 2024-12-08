@@ -11,7 +11,7 @@ public class WishList
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Column("id")]
-    public virtual int Id { get; }
+    public virtual int Id { get; set; }
 
     [Required] [Column("employee_id")] public virtual int EmployeeId { get; set; }
     public virtual Employee Employee { get; set; }

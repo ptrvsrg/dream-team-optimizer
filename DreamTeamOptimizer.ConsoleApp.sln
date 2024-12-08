@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DreamTeamOptimizer.ConsoleA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DreamTeamOptimizer.Strategies", "src\DreamTeamOptimizer.Strategies\DreamTeamOptimizer.Strategies.csproj", "{AD91A2BA-3F51-4F06-A6E0-C85F7F55668D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DreamTeamOptimizer.ConsoleApp.Tests", "src\DreamTeamOptimizer.ConsoleApp.Tests\DreamTeamOptimizer.ConsoleApp.Tests.csproj", "{D96ED6F8-48FB-4CAE-AE95-FE125B756B02}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DreamTeamOptimizer.ConsoleApp.Tests", "tests\DreamTeamOptimizer.ConsoleApp.Tests\DreamTeamOptimizer.ConsoleApp.Tests.csproj", "{D96ED6F8-48FB-4CAE-AE95-FE125B756B02}"
 EndProject
 Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution

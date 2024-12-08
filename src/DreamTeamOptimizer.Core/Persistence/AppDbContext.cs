@@ -11,7 +11,7 @@ public class AppDbContext : DbContext
     public DbSet<Team> Teams { get; set; }
     public DbSet<Satisfaction> Satisfactions { get; set; }
     public DbSet<Hackathon> Hackathons { get; set; }
-    
+
     public AppDbContext()
     {
     }

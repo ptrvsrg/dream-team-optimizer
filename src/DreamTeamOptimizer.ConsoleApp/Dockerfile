@@ -1,7 +1,11 @@
 # Create a stage for building the application.
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 
-COPY ../ /app
+COPY DreamTeamOptimizer.ConsoleApp.sln /app/DreamTeamOptimizer.ConsoleApp.sln
+COPY src/DreamTeamOptimizer.ConsoleApp /app/src/DreamTeamOptimizer.ConsoleApp
+COPY src/DreamTeamOptimizer.Core /app/src/DreamTeamOptimizer.Core
+COPY src/DreamTeamOptimizer.Strategies /app/src/DreamTeamOptimizer.Strategies
+COPY tests/DreamTeamOptimizer.ConsoleApp.Tests /app/tests/DreamTeamOptimizer.ConsoleApp.Tests
 
 WORKDIR /app
 
@@ -13,7 +17,7 @@ ARG TARGETARCH
 RUN dotnet restore DreamTeamOptimizer.ConsoleApp.sln
 
 # Build the application
-RUN dotnet publish DreamTeamOptimizer.ConsoleApp.sln \
+RUN dotnet build DreamTeamOptimizer.ConsoleApp.sln \
     -c Release \
     -o out \
     --no-restore

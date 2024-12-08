@@ -1,17 +1,39 @@
-version: '3.8'
+version: '3.9'
 
 networks:
-    hackathon-local-net:
+    hackathon-net:
+        driver: bridge
 
 volumes:
-    hackathon-local-postgres-data:
-    hackathon-local-redis-data:
-    hackathon-local-minio-data:
+    hackathon-postgres-data:
+    traefik-config:
+
+x-service-templates:
+    ms-employee: &ms-employee
+        image: ptrvsrg/dream-team-optimizer-ms-employee:latest
+        restart: unless-stopped
+        environment:
+            Logging__Serilog__MinimumLevel__Default: Debug
+            Consul__Host: consul
+            Consul__Port: 8500
+            Consul__Discovery__Port: 8080
+            ConnectionStrings__Postgres: 'Host=postgres;Port=5432;Database=hackathon;Username=admin;Password=password;'
+        healthcheck:
+            test: [ "CMD-SHELL", "wget -T5 -qO- http://localhost:8080/health | grep Healthy || exit 1" ]
+        networks:
+            - hackathon-net
+        labels:
+            - "traefik.enable=false"
+        depends_on:
+            consul:
+                condition: service_healthy
+            postgres:
+                condition: service_healthy
 
 services:
     postgres:
         image: postgres:17-alpine3.20
-        container_name: hackathon-local-postgres
+        container_name: postgres
         restart: unless-stopped
         environment:
             POSTGRES_USER: admin
@@ -19,12 +41,205 @@ services:
             POSTGRES_DB: hackathon
         healthcheck:
             test: [ "CMD-SHELL", "pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}" ]
-            interval: 5s
-            timeout: 5s
-            retries: 50
         ports:
-            - 25432:5432
+            - "25432:5432"
         volumes:
-            - hackathon-local-postgres-data:/var/lib/postgresql/data
+            - hackathon-postgres-data:/var/lib/postgresql/data
         networks:
-            - hackathon-local-net
+            - hackathon-net
+        labels:
+            - "traefik.enable=false"
+    
+    consul:
+        image: consul:1.15.4
+        container_name: consul
+        restart: unless-stopped
+        healthcheck:
+            test: [ "CMD-SHELL", "consul info | awk '/health_score/{if ($3 >=1) exit 1; else exit 0}'" ]
+        ports:
+            - "28500:8500"
+        networks:
+            - hackathon-net
+        labels:
+            - "traefik.enable=false"
+    
+    ms-employee-1:
+        <<: *ms-employee
+        container_name: ms-employee-1
+        environment:
+            Application__EmployeeID: 1
+            Application__EmployeeName: 'Юдин Адам'
+            Consul__Discovery__ServiceName: ms-employee-1
+            Consul__Discovery__Hostname: ms-employee-1
+    ms-employee-2:
+        <<: *ms-employee
+        container_name: ms-employee-2
+        environment:
+            Application__EmployeeID: 2
+            Application__EmployeeName: 'Яшина Яна'
+            Consul__Discovery__ServiceName: ms-employee-2
+            Consul__Discovery__Hostname: ms-employee-2
+    ms-employee-3:
+        <<: *ms-employee
+        container_name: ms-employee-3
+        environment:
+            Application__EmployeeID: 3
+            Application__EmployeeName: 'Никитина Вероника'
+            Consul__Discovery__ServiceName: ms-employee-3
+            Consul__Discovery__Hostname: ms-employee-3
+    ms-employee-4:
+        <<: *ms-employee
+        container_name: ms-employee-4
+        environment:
+            Application__EmployeeID: 4
+            Application__EmployeeName: 'Рябинин Александр'
+            Consul__Discovery__ServiceName: ms-employee-4
+            Consul__Discovery__Hostname: ms-employee-4
+    ms-employee-5:
+        <<: *ms-employee
+        container_name: ms-employee-5
+        environment:
+            Application__EmployeeID: 5
+            Application__EmployeeName: 'Ильин Тимофей'
+            Consul__Discovery__ServiceName: ms-employee-5
+            Consul__Discovery__Hostname: ms-employee-5
+    
+    ms-employee-21:
+        <<: *ms-employee
+        container_name: ms-employee-21
+        environment:
+            Application__EmployeeID: 21
+            Application__EmployeeName: 'Филиппова Ульяна'
+            Consul__Discovery__ServiceName: ms-employee-21
+            Consul__Discovery__Hostname: ms-employee-21
+    ms-employee-22:
+        <<: *ms-employee
+        container_name: ms-employee-22
+        environment:
+            Application__EmployeeID: 22
+            Application__EmployeeName: 'Николаев Григорий'
+            Consul__Discovery__ServiceName: ms-employee-22
+            Consul__Discovery__Hostname: ms-employee-22
+    ms-employee-23:
+        <<: *ms-employee
+        container_name: ms-employee-23
+        environment:
+            Application__EmployeeID: 23
+            Application__EmployeeName: 'Андреева Вероника'
+            Consul__Discovery__ServiceName: ms-employee-23
+            Consul__Discovery__Hostname: ms-employee-23
+    ms-employee-24:
+        <<: *ms-employee
+        container_name: ms-employee-24
+        environment:
+            Application__EmployeeID: 24
+            Application__EmployeeName: 'Коротков Михаил'
+            Consul__Discovery__ServiceName: ms-employee-24
+            Consul__Discovery__Hostname: ms-employee-24
+    ms-employee-25:
+        <<: *ms-employee
+        container_name: ms-employee-25
+        environment:
+            Application__EmployeeID: 25
+            Application__EmployeeName: 'Кузнецов Александр'
+            Consul__Discovery__ServiceName: ms-employee-25
+            Consul__Discovery__Hostname: ms-employee-25
+    
+    ms-hr-manager:
+        image: ptrvsrg/dream-team-optimizer-ms-hr-manager:latest
+        container_name: ms-hr-manager
+        restart: unless-stopped
+        environment:
+            Application__Strategy: 'WeightedPreference'
+            Consul__Host: consul
+            Consul__Port: 8500
+            Consul__Discovery__Hostname: ms-hr-manager
+            Consul__Discovery__Port: 8080
+            ConnectionStrings__Postgres: 'Host=postgres;Port=5432;Database=hackathon;Username=admin;Password=password;'
+        healthcheck:
+            test: [ "CMD-SHELL", "wget -T5 -qO- http://localhost:8080/health | grep Healthy || exit 1" ]
+        networks:
+            - hackathon-net
+        labels:
+            - "traefik.enable=false"
+        depends_on:
+            consul:
+                condition: service_healthy
+            postgres:
+                condition: service_healthy
+            ms-employee-1:
+                condition: service_healthy
+            ms-employee-2:
+                condition: service_healthy
+            ms-employee-3:
+                condition: service_healthy
+            ms-employee-4:
+                condition: service_healthy
+            ms-employee-5:
+                condition: service_healthy
+            ms-employee-21:
+                condition: service_healthy
+            ms-employee-22:
+                condition: service_healthy
+            ms-employee-23:
+                condition: service_healthy
+            ms-employee-24:
+                condition: service_healthy
+            ms-employee-25:
+                condition: service_healthy
+                
+    ms-hr-director:
+        image: ptrvsrg/dream-team-optimizer-ms-hr-director:latest
+        container_name: ms-hr-director
+        restart: unless-stopped
+        environment:
+            Logging__Serilog__MinimumLevel__Default: Debug
+            Consul__Host: consul
+            Consul__Port: 8500
+            Consul__Discovery__Hostname: ms-hr-director
+            Consul__Discovery__Port: 8080
+            ConnectionStrings__Postgres: 'Host=postgres;Port=5432;Database=hackathon;Username=admin;Password=password;'
+        healthcheck:
+            test: [ "CMD-SHELL", "wget -T5 -qO- http://localhost:8080/health | grep Healthy || exit 1" ]
+        networks:
+            - hackathon-net
+        depends_on:
+            consul:
+                condition: service_healthy
+            postgres:
+                condition: service_healthy
+            ms-hr-manager:
+                condition: service_healthy
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.ms-hr-director.rule=PathPrefix(`/api/v1/hackathons`) && !Path(`/api/v1/hackathons/webhook`)"
+            - "traefik.http.routers.ms-hr-director.priority=10"
+            - "traefik.http.routers.ms-hr-director.service=ms-hr-director"
+            - "traefik.http.services.ms-hr-director.loadbalancer.server.port=8080"
+                
+    traefik:
+        image: traefik:v2.11.14
+        container_name: traefik
+        restart: unless-stopped
+        command:
+            - "--api.dashboard=true"
+            - "--api.insecure=true"
+            - "--providers.docker=true"
+            - "--ping=true"
+            - "--entrypoints.web.address=:80"
+        healthcheck:
+            test: [ "CMD-SHELL", "wget -T5 -qO- http://localhost:8080/ping | grep OK || exit 1" ]
+        ports:
+            - "20080:80"
+            - "20081:8080"
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - traefik-config:/etc/traefik
+        labels:
+            - "traefik.enable=false"
+        networks:
+            - hackathon-net
+        depends_on:
+            ms-hr-director:
+                condition: service_healthy
+        

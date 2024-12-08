@@ -1,0 +1,51 @@
+﻿{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "dev:1": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "http://localhost:8085",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Application__EmployeeID": "1",
+        "Application__EmployeeName": "Юдин Адам",
+        "Consul__Discovery__Hostname": "localhost",
+        "Consul__Discovery__Port": "8085",
+        "Consul__Discovery__ServiceName": "ms-employee-1",
+        "Kestrel__Endpoints__Http__Url": "http://localhost:8085"
+      }
+    },
+    "dev:21": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "http://localhost:8086",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Application__EmployeeID": "21",
+        "Application__EmployeeName": "Филиппова Ульяна",
+        "Consul__Discovery__Hostname": "localhost",
+        "Consul__Discovery__Port": "8086",
+        "Consul__Discovery__ServiceName": "ms-employee-21",
+        "Kestrel__Endpoints__Http__Url": "http://localhost:8086"
+      }
+    },
+    "preview": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:8081",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production",
+        "Application:EmployeeID": "1",
+        "Application__EmployeeName": "Юдин Адам",
+        "Consul__Discovery__Hostname": "localhost",
+        "Consul__Discovery__Port": "8081",
+        "Consul__Discovery__ServiceName": "ms-employee-1",
+        "Kestrel__Endpoints__Http__Url": "http://localhost:8081"
+      }
+    }
+  }
+}

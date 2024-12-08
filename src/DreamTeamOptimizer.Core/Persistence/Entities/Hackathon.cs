@@ -16,7 +16,7 @@ public class Hackathon
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Column("id")]
-    public virtual int Id { get; set;  }
+    public virtual int Id { get; set; }
 
     [Required]
     [Column("status", TypeName = "text")]

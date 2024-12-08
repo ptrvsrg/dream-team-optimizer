@@ -101,6 +101,10 @@ instinctively, its preferences may carry more weight.
 
 + .NET SDK 8.0
 
+<h2 id="architecture">Architecture WEB application</h2>
+
+![Architecture](./assets/architecture.png)
+
 <h2 id="started">Getting started</h2>
 
 <h3>Prerequisites</h3>
@@ -108,6 +112,7 @@ instinctively, its preferences may carry more weight.
 - Git
 - .NET SDK
 - Docker
+- Docker Compose
 
 <h3>Installation</h3>
 
@@ -115,9 +120,7 @@ instinctively, its preferences may carry more weight.
 git clone https://github.com/ptrvsrg/dream-team-optimizer
 ```
 
-<h3>Launch</h3>
-
-<h4>Locally</h4>
+<h3>Launch console application</h3>
 
 Conduct hackathon:
 ```bash
@@ -139,6 +142,59 @@ make build.console
 HACKATHON_CONFIG_PATH=./src/DreamTeamOptimizer.ConsoleApp/appsettings.json \
   dotnet ./out/DreamTeamOptimizer.ConsoleApp.dll average-harmonic
 ```
+
+<h3>Launch WEB application</h3>
+
+1) Build applications
+
+    ```bash
+    make build.ms-employee
+    make build.ms-hr-director
+    make build.ms-hr-manager
+    ```
+
+2) Run applications
+
+    ```bash
+    docker compose up -d
+    ```
+    
+    After finishing execution, you can see the running containers:
+    
+    + PostgreSQL - for store data
+    + Consul - for service discovery
+    + Nginx - for reverse proxy
+    + Microservices:
+        + ms-employee-1 - WEB application for junior with ID 1
+        + ms-employee-21 - WEB application for team lead with ID 21
+        + ms-hr-director - WEB application for HR director
+        + ms-hr-manager - WEB application for HR manager
+
+3) Conduct hackathon:
+
+    ```bash
+    curl -X 'POST' \
+      'http://localhost:20080/api/v1/hackathons' \
+      -H 'accept: application/json' \
+      -d ''
+    ```
+
+4) Get hackathon by ID:
+
+    ```bash
+    HACKATHON_ID=1
+    curl -X 'GET' \
+      "http://localhost:20080/api/v1/hackathons/${HACKATHON_ID}" \
+      -H 'accept: application/json'
+    ```
+
+5) Get average harmonicity:
+
+    ```bash
+    curl -X 'GET' \
+      'http://localhost:20080/api/v1/hackathons/average-harmonic' \
+      -H 'accept: application/json'
+    ```
 
 <h2 id="contribute">Contribute</h2>
 

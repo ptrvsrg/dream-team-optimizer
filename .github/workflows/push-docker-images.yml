@@ -12,6 +12,13 @@ on:
 jobs:
       push-images:
         runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                solutions:
+                    - { key: "console" , value: "DreamTeamOptimizer.ConsoleApp.sln" }
+                    - { key: "ms-employee" , value: "DreamTeamOptimizer.MsEmployee.sln" }
+                    - { key: "ms-hr-manager" , value: "DreamTeamOptimizer.MsHrManager.sln" }
+                    - { key: "ms-hr-director" , value: "DreamTeamOptimizer.MsHrDirector.sln" }
         defaults:
           run:
             working-directory: './Store'
@@ -28,14 +35,14 @@ jobs:
             id: meta
             uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
             with:
-              images: ghcr.io/${{ github.repository }}-console
+              images: ghcr.io/${{ github.repository }}-${{ matrix.solutions.key }}
           - name: Build and Push Docker image
             uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
             with:
               context: .
-              file: ./src/DreamTeamOptimizer.ConsoleApp/Dockerfile
+              file: ./src/${{ matrix.solutions.value }}/Dockerfile
               push: true
               tags: |
-                ghcr.io/${{ github.repository }}-console:latest
-                ghcr.io/${{ github.repository }}-console:${{ github.ref_name }}
+                ghcr.io/${{ github.repository }}-${{ matrix.solutions.key }}:latest
+                ghcr.io/${{ github.repository }}-${{ matrix.solutions.key }}:${{ github.ref_name }}
               labels: ${{ steps.meta.outputs.labels }}
