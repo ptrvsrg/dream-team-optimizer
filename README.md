@@ -93,7 +93,7 @@ instinctively, its preferences may carry more weight.
         <td>369.583</td>
         <td>0.375</td>
         <td>129</td>
-        <td>14.159</td>
+        <td>14.335</td>
     </tr>
 </table>
 

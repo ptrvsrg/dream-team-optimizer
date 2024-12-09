@@ -1,12 +1,11 @@
-using DreamTeamOptimizer.Core.Entities;
-using DreamTeamOptimizer.Core.Interfaces;
+using Nsu.HackathonProblem.Contracts;
 
 namespace DreamTeamOptimizer.Strategies;
 
-public class WeightedPreferenceStrategy : IStrategy
+public class WeightedPreferenceStrategy : ITeamBuildingStrategy
 {
     public IEnumerable<Team> BuildTeams(IEnumerable<Employee> teamLeads, IEnumerable<Employee> juniors,
-        IEnumerable<WishList> teamLeadsWishlists, IEnumerable<WishList> juniorsWishlists)
+        IEnumerable<Wishlist> teamLeadsWishlists, IEnumerable<Wishlist> juniorsWishlists)
     {
         // Dictionaries for quick search of employee
         var teamLeadsDict = teamLeads.ToDictionary(tl => tl.Id);

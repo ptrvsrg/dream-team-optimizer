@@ -1,6 +1,5 @@
 ﻿using DreamTeamOptimizer.ConsoleApp.Config;
 using DreamTeamOptimizer.ConsoleApp.DI;
-using DreamTeamOptimizer.Core.Interfaces;
 using DreamTeamOptimizer.Core.Interfaces.IServices;
 using DreamTeamOptimizer.Core.Services;
 using DreamTeamOptimizer.Strategies;
@@ -9,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Nsu.HackathonProblem.Contracts;
 using Serilog;
 using Serilog.Events;
 
@@ -32,7 +32,7 @@ builder.Services.AddOptions<Config>()
     .Bind(builder.Configuration.GetSection(nameof(Config)))
     .ValidateDataAnnotations();
 
-builder.Services.AddSingleton<IStrategy>(provider =>
+builder.Services.AddSingleton<ITeamBuildingStrategy>(provider =>
     {
         var config = provider.GetService<IOptions<Config>>()!;
         Log.Information($"Used strategy: {config.Value.Strategy.ToString()}");

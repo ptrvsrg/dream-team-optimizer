@@ -1,4 +1,4 @@
-using DreamTeamOptimizer.Core.Entities;
+using Nsu.HackathonProblem.Contracts;
 
 namespace DreamTeamOptimizer.Core.Interfaces.IServices;
 

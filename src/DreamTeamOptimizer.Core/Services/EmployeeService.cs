@@ -1,6 +1,6 @@
-using DreamTeamOptimizer.Core.Entities;
 using DreamTeamOptimizer.Core.Helpers;
 using DreamTeamOptimizer.Core.Interfaces.IServices;
+using Nsu.HackathonProblem.Contracts;
 
 namespace DreamTeamOptimizer.Core.Services;
 

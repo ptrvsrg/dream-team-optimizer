@@ -1,9 +1,9 @@
-using DreamTeamOptimizer.Core.Entities;
+using Nsu.HackathonProblem.Contracts;
 
 namespace DreamTeamOptimizer.Core.Interfaces.IServices;
 
 public interface IHrManagerService
 {
     List<Team> BuildTeams(List<Employee> teamLeads, List<Employee> juniors, 
-        List<WishList> teamLeadsWishlists, List<WishList> juniorsWishlists);
+        List<Wishlist> teamLeadsWishlists, List<Wishlist> juniorsWishlists);
 }

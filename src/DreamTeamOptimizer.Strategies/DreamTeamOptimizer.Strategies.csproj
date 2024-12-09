@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-        <ProjectReference Include="..\DreamTeamOptimizer.Core\DreamTeamOptimizer.Core.csproj"/>
+        <ProjectReference Include="..\Nsu.HackathonProblem.Contracts\Nsu.HackathonProblem.Contracts.csproj"/>
     </ItemGroup>
 
     <PropertyGroup>

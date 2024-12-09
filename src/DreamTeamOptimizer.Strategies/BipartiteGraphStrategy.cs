@@ -1,12 +1,11 @@
-﻿using DreamTeamOptimizer.Core.Entities;
-using DreamTeamOptimizer.Core.Interfaces;
+﻿using Nsu.HackathonProblem.Contracts;
 
 namespace DreamTeamOptimizer.Strategies;
 
-public class BipartiteGraphStrategy : IStrategy
+public class BipartiteGraphStrategy : ITeamBuildingStrategy
 {
     public IEnumerable<Team> BuildTeams(IEnumerable<Employee> teamLeads, IEnumerable<Employee> juniors,
-        IEnumerable<WishList> teamLeadsWishlists, IEnumerable<WishList> juniorsWishlists)
+        IEnumerable<Wishlist> teamLeadsWishlists, IEnumerable<Wishlist> juniorsWishlists)
     {
         var teams = new List<Team>(teamLeads.Count());
         var edges = new List<Edge>(teamLeads.Count() * juniors.Count());
@@ -37,7 +36,7 @@ public class BipartiteGraphStrategy : IStrategy
                 // Calculating satisfaction (sorted by decrease)
                 var juniorSatisfaction = juniorWishList.Length - juniorPreferenceIndex;
                 var teamLeadSatisfaction = teamLeadWishList.Length - teamLeadPreferenceIndex;
-                var weight = juniorSatisfaction + teamLeadSatisfaction;
+                var weight = juniorSatisfaction * teamLeadSatisfaction;
 
                 // Add edge
                 edges.Add(new Edge(junior, teamLead, weight));

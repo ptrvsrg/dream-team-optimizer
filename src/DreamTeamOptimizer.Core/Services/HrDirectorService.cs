@@ -1,13 +1,13 @@
-using DreamTeamOptimizer.Core.Entities;
 using DreamTeamOptimizer.Core.Exceptions;
 using DreamTeamOptimizer.Core.Interfaces.IServices;
+using Nsu.HackathonProblem.Contracts;
 
 namespace DreamTeamOptimizer.Core.Services;
 
 public class HrDirectorService: IHrDirectorService
 {
-    public double CalculateDistributionHarmony(List<Team> teams, List<WishList> teamLeadsWishlists,
-        List<WishList> juniorsWishlists)
+    public double CalculateDistributionHarmony(List<Team> teams, List<Wishlist> teamLeadsWishlists,
+        List<Wishlist> juniorsWishlists)
     {
         if (teams.Count == 0) throw new NoTeamsException();
 

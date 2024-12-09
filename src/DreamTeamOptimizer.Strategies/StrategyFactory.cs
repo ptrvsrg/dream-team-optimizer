@@ -1,10 +1,10 @@
-using DreamTeamOptimizer.Core.Interfaces;
+using Nsu.HackathonProblem.Contracts;
 
 namespace DreamTeamOptimizer.Strategies;
 
 public class StrategyFactory
 {
-    public static IStrategy NewStrategy(StrategyType type)
+    public static ITeamBuildingStrategy NewStrategy(StrategyType type)
     {
         return type switch
         {

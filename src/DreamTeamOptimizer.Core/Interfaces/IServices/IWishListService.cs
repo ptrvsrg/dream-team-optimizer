@@ -1,8 +1,8 @@
-using DreamTeamOptimizer.Core.Entities;
+using Nsu.HackathonProblem.Contracts;
 
 namespace DreamTeamOptimizer.Core.Interfaces.IServices;
 
 public interface IWishListService
 {
-    List<WishList> GetWishlists(List<Employee> employees, List<Employee> desiredEmployees);
+    List<Wishlist> GetWishlists(List<Employee> employees, List<Employee> desiredEmployees);
 }
