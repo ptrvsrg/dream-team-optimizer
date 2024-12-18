@@ -4,6 +4,7 @@ using DreamTeamOptimizer.Core.Persistence;
 using DreamTeamOptimizer.Core.Persistence.Entities;
 using DreamTeamOptimizer.ConsoleApp.Services.Mappers;
 using Serilog;
+using Math = DreamTeamOptimizer.Core.Helpers.Math;
 
 namespace DreamTeamOptimizer.ConsoleApp.Services;
 
@@ -57,7 +58,7 @@ public class HackathonService(
 
                 // Calculate harmonic mean
                 var satisfactionRanks = satisfactions.Select(s => s.Rank).ToList();
-                var harmonicMean = Helpers.Math.CalculateHarmonicMean(satisfactionRanks);
+                var harmonicMean = Math.CalculateHarmonicMean(satisfactionRanks);
                 hackathon.Result = harmonicMean;
 
                 // Complete hackathon

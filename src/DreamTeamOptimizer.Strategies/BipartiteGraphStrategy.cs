@@ -54,7 +54,7 @@ public class BipartiteGraphStrategy : IStrategy
         foreach (var edge in sortedEdges)
             if (!matchedJuniors.Contains(edge.Junior.Id) && !matchedTeamLeads.Contains(edge.TeamLead.Id))
             {
-                teams.Add(new Team(edge.TeamLead, edge.Junior));
+                teams.Add(new Team(edge.TeamLead.Id, edge.Junior.Id));
                 matchedJuniors.Add(edge.Junior.Id);
                 matchedTeamLeads.Add(edge.TeamLead.Id);
             }

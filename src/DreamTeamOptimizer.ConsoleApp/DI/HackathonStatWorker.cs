@@ -59,7 +59,7 @@ public class HackathonStatWorker(
             .Select(w => $"\t#{w.EmployeeId} - [{w.DesiredEmployees.Select(id => $"#{id}").Aggregate((current, next) => current + ", " + next)}]")
             .Aggregate((current, next) => current + "\n" + next);
         var teamsStat = hackathon.Teams
-            .Select(t => $"\t#{t.TeamLead.Id} - #{t.Junior.Id}")
+            .Select(t => $"\t#{t.TeamLeadId} - #{t.JuniorId}")
             .Aggregate((current, next) => current + "\n" + next);
 
         var statistics = $"Found hackathon #{hackathon.Id}:\n" +

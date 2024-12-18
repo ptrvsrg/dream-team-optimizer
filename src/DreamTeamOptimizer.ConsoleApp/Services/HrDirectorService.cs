@@ -24,10 +24,10 @@ public class HrDirectorService(ISatisfactionRepository satisfactionRepository) :
         var satisfactionModels = new List<SatisfactionModel>();
         foreach (var team in teams)
         {
-            var teamLeadSatisfaction = CalculateSatisfaction(team.TeamLead.Id, team.Junior.Id, teamLeadsWishlistsDict);
+            var teamLeadSatisfaction = CalculateSatisfaction(team.TeamLeadId, team.JuniorId, teamLeadsWishlistsDict);
             satisfactionModels.Add(teamLeadSatisfaction);
 
-            var juniorSatisfaction = CalculateSatisfaction(team.Junior.Id, team.TeamLead.Id, juniorsWishlistsDict);
+            var juniorSatisfaction = CalculateSatisfaction(team.JuniorId, team.TeamLeadId, juniorsWishlistsDict);
             satisfactionModels.Add(juniorSatisfaction);
         }
 
