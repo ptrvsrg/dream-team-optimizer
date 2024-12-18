@@ -15,10 +15,10 @@ jobs:
         strategy:
             matrix:
                 solutions:
-                    - { key: "console" , value: "DreamTeamOptimizer.ConsoleApp.sln" }
-                    - { key: "ms-employee" , value: "DreamTeamOptimizer.MsEmployee.sln" }
-                    - { key: "ms-hr-manager" , value: "DreamTeamOptimizer.MsHrManager.sln" }
-                    - { key: "ms-hr-director" , value: "DreamTeamOptimizer.MsHrDirector.sln" }
+                    - { key: "console" , value: "DreamTeamOptimizer.ConsoleApp" }
+                    - { key: "ms-employee" , value: "DreamTeamOptimizer.MsEmployee" }
+                    - { key: "ms-hr-manager" , value: "DreamTeamOptimizer.MsHrManager" }
+                    - { key: "ms-hr-director" , value: "DreamTeamOptimizer.MsHrDirector" }
         defaults:
           run:
             working-directory: './Store'
