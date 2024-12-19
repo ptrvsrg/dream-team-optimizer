@@ -37,7 +37,7 @@ public class BipartiteGraphStrategy : IStrategy
                 // Calculating satisfaction (sorted by decrease)
                 var juniorSatisfaction = juniorWishList.Length - juniorPreferenceIndex;
                 var teamLeadSatisfaction = teamLeadWishList.Length - teamLeadPreferenceIndex;
-                var weight = juniorSatisfaction + teamLeadSatisfaction;
+                var weight = juniorSatisfaction * teamLeadSatisfaction;
 
                 // Add edge
                 edges.Add(new Edge(junior, teamLead, weight));

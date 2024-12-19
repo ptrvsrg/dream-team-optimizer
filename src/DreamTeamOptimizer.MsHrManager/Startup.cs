@@ -4,19 +4,21 @@ using DreamTeamOptimizer.Core.Interfaces;
 using DreamTeamOptimizer.Core.Interfaces.Repositories;
 using DreamTeamOptimizer.Core.Persistence;
 using DreamTeamOptimizer.Core.Persistence.Repositories;
-using DreamTeamOptimizer.MsHrManager.Clients;
+using DreamTeamOptimizer.MsHrManager.Brokers.Consumers;
+using DreamTeamOptimizer.MsHrManager.Brokers.Publishers;
 using DreamTeamOptimizer.MsHrManager.Config;
 using DreamTeamOptimizer.MsHrManager.ExceptionHandlers;
-using DreamTeamOptimizer.MsHrManager.Interfaces.Clients;
+using DreamTeamOptimizer.MsHrManager.Interfaces.Brokers;
+using DreamTeamOptimizer.MsHrManager.Interfaces.Brokers.Publishers;
 using DreamTeamOptimizer.MsHrManager.Interfaces.Services;
 using DreamTeamOptimizer.MsHrManager.Services;
 using DreamTeamOptimizer.Strategies;
+using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Consul;
 
@@ -28,7 +30,8 @@ public class Startup(IConfiguration configuration)
     {
         ConfigureConfiguration(services);
         ConfigureStrategy(services);
-        ConfigureClientLayer(services);
+        ConfigureCaching(services);
+        ConfigureBrokerLayer(services);
         ConfigureRepositoryLayer(services);
         ConfigureServiceLayer(services);
         ConfigureControllerLayer(services);
@@ -76,20 +79,39 @@ public class Startup(IConfiguration configuration)
             }
         );
     }
-
-    private void ConfigureClientLayer(IServiceCollection services)
+    
+    private void ConfigureCaching(IServiceCollection services)
     {
-        services.AddServiceDiscovery(builder => builder.UseConsul());
-        services.AddDiscoveryClient(configuration);
-        services.AddHttpClient(EmployeeClient.ServiceName)
-            .AddServiceDiscovery()
-            .AddRoundRobinLoadBalancer();
-        services.AddHttpClient(HrDirectorClient.ServiceName)
-            .AddServiceDiscovery()
-            .AddRoundRobinLoadBalancer();
-
-        services.AddScoped<IEmployeeClient, EmployeeClient>();
-        services.AddScoped<IHrDirectorClient, HrDirectorClient>();
+        services.AddMemoryCache();
+    }
+    
+    private void ConfigureBrokerLayer(IServiceCollection services)
+    {
+        // RabbitMQ
+        services.AddMassTransit(registerConfig =>
+        {
+            registerConfig.AddConsumer<WishListConsumer>();
+            registerConfig.AddConsumer<HackathonStartedConsumer>();
+            registerConfig.UsingRabbitMq((context, factoryConfig) =>
+            {
+                var connectionString = configuration.GetConnectionString("RabbitMQ")!;
+                factoryConfig.Host(connectionString);
+                factoryConfig.ConfigureEndpoints(context);
+            });
+        });
+        services.AddScoped<IVotingStartedPublisher, VotingStartedPublisher>();
+        services.AddScoped<IHackathonResultPublisher, HackathonResultPublisher>();
+        
+        // In memory
+        services.AddMassTransit<IMemoryBus>(registerConfig =>
+        {
+            registerConfig.AddConsumer<VotingCompletedConsumer>();
+            registerConfig.UsingInMemory((context, factoryConfig) =>
+            {
+                factoryConfig.ConfigureEndpoints(context);
+            });
+        });
+        services.AddScoped<IVotingCompletedPublisher, VotingCompletedPublisher>();
     }
 
     private void ConfigureRepositoryLayer(IServiceCollection services)
@@ -121,6 +143,9 @@ public class Startup(IConfiguration configuration)
 
     private void ConfigureControllerLayer(IServiceCollection services)
     {
+        services.AddServiceDiscovery(builder => builder.UseConsul());
+        services.AddDiscoveryClient(configuration);
+        
         services.AddProblemDetails();
         services.AddExceptionHandler<HttpStatusExceptionHandler>();
         services.AddExceptionHandler<GlobalExceptionHandler>();

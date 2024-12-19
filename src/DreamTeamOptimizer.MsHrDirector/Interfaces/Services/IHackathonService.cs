@@ -6,7 +6,8 @@ public interface IHackathonService
 {
     HackathonSimple Create();
 
-    void SaveResult(HackathonResult result, int hackathonId);
+    void SaveResult(List<Team> teams, List<WishList> teamLeadsWishlists, List<WishList> juniorsWishlists,
+        int hackathonId);
 
     Hackathon GetById(int id);
 

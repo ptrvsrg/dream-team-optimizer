@@ -3,10 +3,14 @@ using System.Text.Json.Serialization;
 using DreamTeamOptimizer.Core.Interfaces.Repositories;
 using DreamTeamOptimizer.Core.Persistence;
 using DreamTeamOptimizer.Core.Persistence.Repositories;
+using DreamTeamOptimizer.MsEmployee.Brokers.Consumers;
+using DreamTeamOptimizer.MsEmployee.Brokers.Publishers;
 using DreamTeamOptimizer.MsEmployee.Config;
 using DreamTeamOptimizer.MsEmployee.ExceptionHandlers;
+using DreamTeamOptimizer.MsEmployee.Interfaces.Brokers.Publishers;
 using DreamTeamOptimizer.MsEmployee.Interfaces.Services;
 using DreamTeamOptimizer.MsEmployee.Services;
+using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -21,6 +25,7 @@ public class Startup(IConfiguration configuration)
     public void ConfigureServices(IServiceCollection services)
     {
         ConfigureConfiguration(services);
+        ConfigureMessageBusLayer(services);
         ConfigureRepositoryLayer(services);
         ConfigureServiceLayer(services);
         ConfigureControllerLayer(services);
@@ -59,6 +64,26 @@ public class Startup(IConfiguration configuration)
         services.AddOptions<AppConfig>()
             .Bind(section)
             .ValidateDataAnnotations();
+    }
+    
+    private void ConfigureMessageBusLayer(IServiceCollection services)
+    {
+        var employeeId = configuration.GetValue<int>("Application:EmployeeID");
+        
+        services.AddMassTransit(registerConfig =>
+        {
+            registerConfig.AddConsumer<VotingStartedConsumer>();
+            registerConfig.UsingRabbitMq((context, factoryConfig) =>
+            {
+                var connectionString = configuration.GetConnectionString("RabbitMQ");
+                factoryConfig.Host(connectionString);
+                factoryConfig.ReceiveEndpoint($"VotingStarted-{employeeId}", config =>
+                {
+                    config.ConfigureConsumer<VotingStartedConsumer>(context);
+                });
+            });
+        });
+        services.AddScoped<IWishListPublisher, WishListPublisher>();
     }
 
     private void ConfigureRepositoryLayer(IServiceCollection services)

@@ -13,14 +13,19 @@ public class WebAppFactory : WebApplicationFactory<Startup>
     {
         var postgresFixture = new PostgresFixture();
         var consulFixture = new ConsulFixture();
-        
-        postgresFixture.InitializeAsync().Wait();
-        consulFixture.InitializeAsync().Wait();
+        var rabbitMqFixture = new RabbitMQFixture();
+
+        Task.WhenAll(
+            postgresFixture.InitializeAsync(),
+            consulFixture.InitializeAsync(),
+            rabbitMqFixture.InitializeAsync()
+        ).Wait();
 
         Environment.SetEnvironmentVariable("Logging__Serilog__MinimumLevel__Default", "Debug");
         Environment.SetEnvironmentVariable("Logging__Serilog__MinimumLevel__Override__Microsoft", "Debug");
         Environment.SetEnvironmentVariable("Logging__Serilog__MinimumLevel__Override__System", "Debug");
         Environment.SetEnvironmentVariable("ConnectionStrings__Postgres", postgresFixture.ConnectionString);
+        Environment.SetEnvironmentVariable("ConnectionStrings__RabbitMQ", rabbitMqFixture.ConnectionString);
         Environment.SetEnvironmentVariable("Consul__Host", consulFixture.Host);
         Environment.SetEnvironmentVariable("Consul__Port", consulFixture.Port.ToString());
     }
@@ -35,6 +40,7 @@ public class WebAppFactory : WebApplicationFactory<Startup>
                 ctx.Database.Migrate();
             }
         }
+
         host.Start();
         return host;
     }

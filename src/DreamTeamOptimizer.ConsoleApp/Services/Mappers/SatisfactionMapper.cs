@@ -17,4 +17,14 @@ public class SatisfactionMapper
     {
         return satisfactions.Select(ToEntity).ToList();
     }
+    
+    public static Core.Models.Satisfaction ToModel(Satisfaction satisfaction)
+    {
+        return new Core.Models.Satisfaction(satisfaction.EmployeeId, satisfaction.Rank);
+    }
+    
+    public static List<Core.Models.Satisfaction> ToModels(List<Satisfaction> satisfactions)
+    {
+        return satisfactions.Select(ToModel).ToList();
+    }
 }

@@ -1,12 +1,10 @@
-using System.Net;
 using DreamTeamOptimizer.Core.Interfaces.Repositories;
-using DreamTeamOptimizer.Core.Models;
+using DreamTeamOptimizer.Core.Models.Events;
 using DreamTeamOptimizer.Core.Persistence;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc.Testing;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Hackathon = DreamTeamOptimizer.Core.Persistence.Entities.Hackathon;
 using HackathonStatus = DreamTeamOptimizer.Core.Persistence.Entities.HackathonStatus;
 
@@ -14,19 +12,16 @@ namespace DreamTeamOptimizer.MsHrManager.Tests.Integration.Controller;
 
 public class HackathonControllerTests : IClassFixture<WebAppFactory>, IAsyncLifetime
 {
-    private readonly HttpClient _httpClient;
     private readonly AppDbContext _dbContext;
     private readonly IHackathonRepository _hackathonRepository;
+    private readonly IBus _bus;
 
     public HackathonControllerTests(WebAppFactory factory)
     {
-        var clientOptions = new WebApplicationFactoryClientOptions();
-        clientOptions.AllowAutoRedirect = false;
-        _httpClient = factory.CreateClient(clientOptions);
-
         var scope = factory.Services.CreateScope();
         _dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         _hackathonRepository = scope.ServiceProvider.GetRequiredService<IHackathonRepository>();
+        _bus = scope.ServiceProvider.GetRequiredService<IBus>();
     }
 
     public Task InitializeAsync()
@@ -53,34 +48,72 @@ public class HackathonControllerTests : IClassFixture<WebAppFactory>, IAsyncLife
         return Task.CompletedTask;
     }
 
-    [Theory]
-    [InlineData("/api/v1/hackathons", 1)]
-    public async Task GetWishlist_ShouldReturnWishlist_WhenDesiredEmployeeIdsAreProvided(string url,
-        int hackathonId)
+    [Fact]
+    public async Task ConudctVoting_ShouldPublishHackathonResult_WhenCalled()
     {
+        // Arrange
+        var hackathonId = 1;
+        _bus.ConnectPublishObserver(new VotingStartedPublisherObserver(hackathonId, _bus));
+        _bus.ConnectPublishObserver(new HackathonResultPublisherObserver(hackathonId));
+        
         // Act
-        var response = await _httpClient.GetAsync($"{url}/{hackathonId}");
+        await _bus.Publish(new HackathonStartedEvent(hackathonId));
+    }
+}
 
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Accepted);
+class VotingStartedPublisherObserver(int hackathonId, IBus bus) : IPublishObserver
+{
+    public Task PrePublish<T>(PublishContext<T> context) where T : class
+    {
+        return Task.CompletedTask;
     }
 
-    [Theory]
-    [InlineData("/api/v1/hackathons", 2)]
-    public async Task GetWishlist_ShouldReturnNotFound_WhenNonExistentHackathon(string url,
-        int hackathonId)
+    public async Task PostPublish<T>(PublishContext<T> context) where T : class
     {
-        // Act
-        var response = await _httpClient.GetAsync($"{url}/{hackathonId}");
+        if (context.Message is VotingStartedEvent votingStartedEvent)
+        {
+            var juniorIds = votingStartedEvent.Juniors.Select(j => j.Id).ToList();
+            var teamLeadIds = votingStartedEvent.TeamLeads.Select(j => j.Id).ToList();
+            
+            foreach (var j in juniorIds)
+            {
+                var wishListEvent = new WishListEvent(hackathonId, new (j, teamLeadIds.ToArray()));
+                await bus.Publish(wishListEvent);
 
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        response.Content.Headers.ContentType!.ToString().Should().Contain("application/json");
+            }
+            foreach (var t in teamLeadIds)
+            {
+                var wishListEvent = new WishListEvent(hackathonId, new (t, juniorIds.ToArray()));
+                await bus.Publish(wishListEvent);
+            }
+        }
+    }
 
-        var content = await response.Content.ReadAsStringAsync();
-        var error = JsonConvert.DeserializeObject<Error>(content);
+    public Task PublishFault<T>(PublishContext<T> context, Exception exception) where T : class
+    {
+        return Task.CompletedTask;
+    }
+}
 
-        error.Should().NotBeNull();
-        error?.Message.Should().Be($"No hackathon #{hackathonId} found");
+class HackathonResultPublisherObserver(int hackathonId) : IPublishObserver
+{
+    public Task PrePublish<T>(PublishContext<T> context) where T : class
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task PostPublish<T>(PublishContext<T> context) where T : class
+    {
+        if (context.Message is HackathonResultEvent hackathonResultEvent)
+        {
+            hackathonResultEvent.Id.Should().Be(hackathonId);
+        }
+        
+        return Task.CompletedTask;
+    }
+
+    public Task PublishFault<T>(PublishContext<T> context, Exception exception) where T : class
+    {
+        return Task.CompletedTask;
     }
 }

@@ -2,22 +2,24 @@ using System.Net;
 using DreamTeamOptimizer.Core.Exceptions;
 using DreamTeamOptimizer.Core.Interfaces.Repositories;
 using DreamTeamOptimizer.Core.Models;
+using DreamTeamOptimizer.MsHrDirector.Interfaces.Brokers.Publishers;
 using DreamTeamOptimizer.MsHrDirector.Interfaces.Services;
 using DreamTeamOptimizer.MsHrDirector.Services.Mappers;
 using Microsoft.Extensions.Caching.Memory;
 using Math = DreamTeamOptimizer.Core.Helpers.Math;
+using Satisfaction = DreamTeamOptimizer.Core.Persistence.Entities.Satisfaction;
 
 namespace DreamTeamOptimizer.MsHrDirector.Services;
 
 public class HackathonService(
     ILogger<HackathonService> logger,
-    IServiceProvider serviceProvider,
+    IServiceScopeFactory serviceScopeFactory,
     IMemoryCache cache,
     IHackathonRepository hackathonRepository,
-    IHrManagerClient hrManagerClient,
+    IHackathonStartedPublisher hackathonStartedPublisher,
     ISatisfactionService satisfactionService) : IHackathonService
 {
-    private readonly TimeSpan _hackathonTimeout = TimeSpan.FromMinutes(1);
+    private readonly TimeSpan _hackathonTimeout = TimeSpan.FromMinutes(3);
 
     public HackathonSimple Create()
     {
@@ -32,18 +34,18 @@ public class HackathonService(
         };
         hackathonRepository.Create(hackathon);
 
-        // Create session
-        logger.LogDebug("create new session");
-        var cacheEntryOptions = new MemoryCacheEntryOptions()
-            .SetAbsoluteExpiration(_hackathonTimeout)
-            .RegisterPostEvictionCallback(SessionExpiredCallback);
-        cache.Set(hackathon.Id, true, cacheEntryOptions);
-
-        // Make HR manager to conduct hackathon
-        logger.LogDebug("make hr manager to conduct hackathon");
         try
         {
-            hrManagerClient.ConductHackathon(hackathon.Id);
+            // Create session
+            logger.LogDebug("create new session");
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(_hackathonTimeout)
+                .RegisterPostEvictionCallback(SessionExpiredCallback);
+            cache.Set(hackathon.Id, true, cacheEntryOptions);
+
+            // Make HR manager to conduct hackathon
+            logger.LogDebug("publish message to HR manager");
+            hackathonStartedPublisher.StartHackathon(hackathon.Id);
         }
         catch (Exception)
         {
@@ -54,14 +56,16 @@ public class HackathonService(
             throw;
         }
 
-        return HackathonMapper.ToModelSimple(hackathonRepository.FindById(hackathon.Id)!);
+        return HackathonMapper.ToModelSimple(hackathon);
     }
 
-    public void SaveResult(HackathonResult result, int hackathonId)
+    public void SaveResult(List<Team> teams, List<WishList> teamLeadsWishlists, List<WishList> juniorsWishlists,
+        int hackathonId)
     {
-        logger.LogInformation("save hackathon result");
+        logger.LogInformation("hackathon completed");
 
         // Find hackathon
+        logger.LogDebug("find hackathon by id");
         var hackathon = hackathonRepository.FindById(hackathonId);
         if (hackathon == null)
             throw new HttpStatusException(HttpStatusCode.NotFound, $"No hackathon #{hackathonId} found");
@@ -74,7 +78,7 @@ public class HackathonService(
         // Calculate satisfactions
         logger.LogDebug("calculate satisfactions");
         var satisfactions =
-            satisfactionService.Evaluate(result.Teams, result.TeamLeadsWishlists, result.JuniorsWishlists);
+            satisfactionService.Evaluate(teams, teamLeadsWishlists, juniorsWishlists);
 
         // Calculate harmonic mean
         logger.LogDebug("calculate harmonic mean");
@@ -106,6 +110,14 @@ public class HackathonService(
         var hackathon = hackathonRepository.FindById(id);
         if (hackathon == null) throw new HttpStatusException(HttpStatusCode.NotFound, $"No hackathon #{id} found");
 
+        if (hackathon.Status != Core.Persistence.Entities.HackathonStatus.COMPLETED)
+        {
+            hackathon.Result = 0.0;
+            hackathon.WishLists = new List<Core.Persistence.Entities.WishList>();
+            hackathon.Satisfactions = new List<Satisfaction>();
+            hackathon.Teams = new List<Core.Persistence.Entities.Team>();
+        }
+
         return HackathonMapper.ToModel(hackathon);
     }
 
@@ -115,7 +127,7 @@ public class HackathonService(
 
         logger.LogInformation("session expired");
 
-        var scope = serviceProvider.CreateScope();
+        var scope = serviceScopeFactory.CreateScope();
         var scopedHackathonRepository = scope.ServiceProvider.GetRequiredService<IHackathonRepository>();
 
         var hackathon = scopedHackathonRepository.FindById(key);

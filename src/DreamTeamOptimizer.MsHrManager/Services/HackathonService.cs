@@ -1,65 +1,50 @@
 using DreamTeamOptimizer.Core.Interfaces.Repositories;
-using DreamTeamOptimizer.Core.Models;
+using DreamTeamOptimizer.Core.Models.Events;
 using DreamTeamOptimizer.Core.Persistence;
 using DreamTeamOptimizer.Core.Persistence.Entities;
-using DreamTeamOptimizer.MsHrManager.Interfaces.Clients;
+using DreamTeamOptimizer.MsHrManager.Interfaces.Brokers.Publishers;
 using DreamTeamOptimizer.MsHrManager.Interfaces.Services;
 using DreamTeamOptimizer.MsHrManager.Services.Mappers;
-using Employee = DreamTeamOptimizer.Core.Persistence.Entities.Employee;
+using WishList = DreamTeamOptimizer.Core.Models.WishList;
+using EmployeeModel = DreamTeamOptimizer.Core.Models.Employee;
 
 namespace DreamTeamOptimizer.MsHrManager.Services;
 
 public class HackathonService(
     ILogger<HackathonService> logger,
-    IServiceScopeFactory serviceScopeFactory,
-    IHackathonRepository hackathonRepository) : IHackathonService
+    AppDbContext dbContext,
+    IWishListRepository wishListRepository,
+    IHackathonEmployeeRepository hackathonEmployeeRepository,
+    IHackathonResultPublisher hackathonResultPublisher,
+    IEmployeeService employeeService,
+    IWishListService wishListService,
+    IStrategyService strategyService) : IHackathonService
 {
-    public bool ExistsById(int id)
-    {
-        logger.LogInformation($"exists hackathon #{id}");
-
-        var hackathon = hackathonRepository.FindById(id);
-        return hackathon != null;
-    }
-    
-    public void Conduct(int hackathonId)
+    public void StartHackathon(int hackathonId)
     {
         logger.LogInformation($"conduct hackathon #{hackathonId}");
-        
-        using var scope = serviceScopeFactory.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var employeeService = scope.ServiceProvider.GetRequiredService<IEmployeeService>();
-        var wishListService = scope.ServiceProvider.GetRequiredService<IWishListService>();
-        var strategyService = scope.ServiceProvider.GetRequiredService<IStrategyService>();
-        var hrDirectorClient = scope.ServiceProvider.GetRequiredService<IHrDirectorClient>();
-        var hackathonEmployeeRepository = scope.ServiceProvider.GetRequiredService<IHackathonEmployeeRepository>();
 
         var tx = dbContext.Database.BeginTransaction();
         try
         {
+            logger.LogDebug("find juniors and team leads");
             var juniors = employeeService.FindAllJuniors();
             var teamLeads = employeeService.FindAllTeamLeads();
 
+            logger.LogDebug("save participants");
             var employees = new List<Employee>()
                 .Concat(EmployeeMapper.ToEntities(juniors))
                 .Concat(EmployeeMapper.ToEntities(teamLeads))
                 .ToList();
-
             var participants = employees.Select(e => new HackathonEmployee
             {
                 HackathonId = hackathonId,
                 EmployeeId = e.Id
             }).ToList();
-
             hackathonEmployeeRepository.CreateAll(participants);
 
-            var juniorWishLists = wishListService.Vote(juniors, teamLeads, hackathonId);
-            var teamLeadWishLists = wishListService.Vote(teamLeads, juniors, hackathonId);
-
-            var teams = strategyService.BuildTeams(teamLeads, juniors, teamLeadWishLists, juniorWishLists, hackathonId);
-
-            var result = new HackathonResult(juniorWishLists, teamLeadWishLists, teams);
-            hrDirectorClient.SaveResult(result, hackathonId);
+            logger.LogDebug("start voting");
+            wishListService.StartVoting(teamLeads, juniors, hackathonId);
 
             tx.Commit();
         }
@@ -68,5 +53,29 @@ public class HackathonService(
             tx.Rollback();
             logger.LogWarning(e, e.Message);
         }
+    }
+
+    public void CompleteHackathon(List<EmployeeModel> teamLeads, List<EmployeeModel> juniors,
+        List<WishList> teamLeadWishLists, List<WishList> juniorWishLists, int hackathonId)
+    {
+        logger.LogInformation($"complete hackathon #{hackathonId}");
+        
+        logger.LogDebug("save wishlists");
+        var allWishLists = new List<WishList>()
+            .Concat(teamLeadWishLists)
+            .Concat(juniorWishLists)
+            .Select(WishListMapper.ToEntity)
+            .Select(w =>
+            {
+                w.HackathonId = hackathonId;
+                return w;
+            })
+            .ToList();
+        wishListRepository.CreateAll(allWishLists);
+        
+        var teams = strategyService.BuildTeams(teamLeads, juniors, teamLeadWishLists, juniorWishLists, hackathonId);
+
+        var result = new HackathonResultEvent(hackathonId, juniorWishLists, teamLeadWishLists, teams);
+        hackathonResultPublisher.SaveResult(result);
     }
 }

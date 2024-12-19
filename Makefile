@@ -7,27 +7,39 @@
 .GREEN_COLOR = \033[0;32m
 .NO_COLOR = \033[0m
 
-.PHONY: clean
-clean:
-	$(.DOTNET) clean
+.PHONY: clean.console
+clean.console:
+	$(.DOTNET) clean  DreamTeamOptimizer.ConsoleApp.sln
+
+.PHONY: clean.ms-employee
+clean.ms-employee:
+	$(.DOTNET) clean  DreamTeamOptimizer.MsEmployee.sln
+
+.PHONY: clean.ms-hr-manager
+clean.ms-hr-manager:
+	$(.DOTNET) clean  DreamTeamOptimizer.MsHrManager.sln
+
+.PHONY: clean.ms-hr-director
+clean.ms-hr-director:
+	$(.DOTNET) clean  DreamTeamOptimizer.MsHrDirector.sln
 
 .PHONY: build.console
-build.console:
+build.console: clean.console
 	$(.DOTNET) restore DreamTeamOptimizer.ConsoleApp.sln
 	$(.DOTNET) publish DreamTeamOptimizer.ConsoleApp.sln -c Release -o out/console
 
 .PHONY: build.ms-employee
-build.ms-employee:
+build.ms-employee: clean.ms-employee
 	$(.DOTNET) restore DreamTeamOptimizer.MsEmployee.sln
 	$(.DOTNET) publish DreamTeamOptimizer.MsEmployee.sln -c Release -o out/ms-employee
 
 .PHONY: build.ms-hr-manager
-build.ms-hr-manager:
+build.ms-hr-manager: clean.ms-hr-manager
 	$(.DOTNET) restore DreamTeamOptimizer.MsHrManager.sln
 	$(.DOTNET) publish DreamTeamOptimizer.MsHrManager.sln -c Release -o out/ms-hr-manager
 
 .PHONY: build.ms-hr-director
-build.ms-hr-director:
+build.ms-hr-director: clean.ms-hr-director
 	$(.DOTNET) restore DreamTeamOptimizer.MsHrDirector.sln
 	$(.DOTNET) publish DreamTeamOptimizer.MsHrDirector.sln -c Release -o out/ms-hr-director
 
@@ -46,6 +58,22 @@ build-image.ms-hr-manager:
 .PHONY: build-image.ms-hr-director
 build-image.ms-hr-director:
 	$(.DOCKER) build -f src/DreamTeamOptimizer.MsHrDirector/Dockerfile -t $(.DOCKER_IMAGE_PREFIX)-ms-hr-director:latest .
+
+.PHONY: test.console
+test.console: build.console
+	$(.DOTNET) test DreamTeamOptimizer.ConsoleApp.sln --no-restore -o out -c Release -v normal -l:trx
+
+.PHONY: test.ms-employee
+test.ms-employee: build.ms-employee
+	$(.DOTNET) test DreamTeamOptimizer.MsEmployee.sln --no-restore -o out -c Release -v normal -l:trx
+
+.PHONY: test.ms-hr-manager
+test.ms-hr-manager: build.ms-hr-manager
+	$(.DOTNET) test DreamTeamOptimizer.MsHrManager.sln --no-restore -o out -c Release -v normal -l:trx
+
+.PHONY: test.ms-hr-director
+test.ms-hr-director: build-image.ms-hr-director
+	$(.DOTNET) test DreamTeamOptimizer.MsHrDirector.sln --no-restore -o out -c Release -v normal -l:trx
 
 .PHONY: prepare-hooks
 prepare-hooks:
