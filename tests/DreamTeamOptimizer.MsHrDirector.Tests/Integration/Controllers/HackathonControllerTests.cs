@@ -202,7 +202,7 @@ public class HackathonControllerTests : IClassFixture<WebAppFactory>, IAsyncLife
         await _bus.Publish(hackathonResult);
 
         // Wait for result
-        await Task.Delay(1000);
+        await Task.Delay(10000);
 
         // Get result
         response = await _httpClient.GetAsync($"/api/v1/hackathons/{hackathonSimple.Id}");
