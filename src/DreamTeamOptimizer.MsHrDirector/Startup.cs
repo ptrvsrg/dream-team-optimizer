@@ -3,15 +3,17 @@ using System.Text.Json.Serialization;
 using DreamTeamOptimizer.Core.Interfaces.Repositories;
 using DreamTeamOptimizer.Core.Persistence;
 using DreamTeamOptimizer.Core.Persistence.Repositories;
-using DreamTeamOptimizer.MsHrDirector.Clients;
+using DreamTeamOptimizer.MsHrDirector.Brokers.Consumers;
+using DreamTeamOptimizer.MsHrDirector.Brokers.Publishers;
 using DreamTeamOptimizer.MsHrDirector.ExceptionHandlers;
+using DreamTeamOptimizer.MsHrDirector.Interfaces.Brokers.Publishers;
 using DreamTeamOptimizer.MsHrDirector.Interfaces.Services;
 using DreamTeamOptimizer.MsHrDirector.Services;
+using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Consul;
 
@@ -22,7 +24,7 @@ public class Startup(IConfiguration configuration)
     public void ConfigureServices(IServiceCollection services)
     {
         ConfigureCaching(services);
-        ConfigureClientLayer(services);
+        ConfigureBrokerLayer(services);
         ConfigureRepositoryLayer(services);
         ConfigureServiceLayer(services);
         ConfigureControllerLayer(services);
@@ -58,15 +60,19 @@ public class Startup(IConfiguration configuration)
         services.AddMemoryCache();
     }
 
-    private void ConfigureClientLayer(IServiceCollection services)
+    private void ConfigureBrokerLayer(IServiceCollection services)
     {
-        services.AddServiceDiscovery(builder => builder.UseConsul());
-        services.AddDiscoveryClient(configuration);
-        services.AddHttpClient(HrManagerClient.ServiceName)
-            .AddServiceDiscovery()
-            .AddRoundRobinLoadBalancer();
-
-        services.AddScoped<IHrManagerClient, HrManagerClient>();
+        services.AddMassTransit(registerConfig =>
+        {
+            registerConfig.AddConsumer<HackathonResultConsumer>();
+            registerConfig.UsingRabbitMq((context, factoryConfig) =>
+            {
+                var connectionString = configuration.GetConnectionString("RabbitMQ");
+                factoryConfig.Host(connectionString);
+                factoryConfig.ConfigureEndpoints(context);
+            });
+        });
+        services.AddScoped<IHackathonStartedPublisher, HackathonStartedPublisher>();
     }
 
     private void ConfigureRepositoryLayer(IServiceCollection services)
@@ -96,6 +102,7 @@ public class Startup(IConfiguration configuration)
 
     private void ConfigureControllerLayer(IServiceCollection services)
     {
+        services.AddServiceDiscovery(builder => builder.UseConsul());   
         services.AddProblemDetails();
         services.AddExceptionHandler<HttpStatusExceptionHandler>();
         services.AddExceptionHandler<GlobalExceptionHandler>();

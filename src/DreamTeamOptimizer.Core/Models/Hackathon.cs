@@ -17,4 +17,5 @@ public record Hackathon(
     double Result,
     List<Employee> Employees,
     List<WishList> WishLists,
-    List<Team> Teams);
+    List<Team> Teams,
+    List<Satisfaction> Satisfactions);

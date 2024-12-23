@@ -1,53 +1,83 @@
 using System.Net;
 using System.Web;
+using DreamTeamOptimizer.Core.Interfaces.Repositories;
 using DreamTeamOptimizer.Core.Models;
+using DreamTeamOptimizer.Core.Models.Events;
+using DreamTeamOptimizer.Core.Persistence;
 using FluentAssertions;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace DreamTeamOptimizer.MsEmployee.Tests.Integration.Controller;
 
 public class WishListControllerTests : IClassFixture<WebAppFactory>
 {
-    private readonly HttpClient _httpClient;
+    private readonly IBus _bus;
 
     public WishListControllerTests(WebAppFactory factory)
     {
-        var clientOptions = new WebApplicationFactoryClientOptions();
-        clientOptions.AllowAutoRedirect = false;
-
-        _httpClient = factory.CreateClient(clientOptions);
+        var scope = factory.Services.CreateScope();
+        _bus = scope.ServiceProvider.GetRequiredService<IBus>();
     }
 
     [Theory]
-    [InlineData("/api/v1/wishlists", 2)]
-    [InlineData("/api/v1/wishlists", 0)]
-    public async Task GetWishlist_ShouldReturnWishlist_WhenDesiredEmployeeIdsAreProvided(string url,
-        int desiredEmployeeCount)
+    [InlineData(2)]
+    [InlineData(0)]
+    public async Task GetWishlist_ShouldReturnWishlist_WhenDesiredEmployeeIdsAreProvided(int countJuniors)
     {
         // Arrange
-        var desiredEmployeeIds = Enumerable.Range(10, desiredEmployeeCount).ToList();
-        
-        var builder = new UriBuilder();
-        builder.Path = url;
+        var juniorIds = Enumerable.Range(10, countJuniors).ToList();
+        var teamLeadIds = Enumerable.Range(20, countJuniors).ToList();
 
-        var query = HttpUtility.ParseQueryString(builder.Query);
-        desiredEmployeeIds.ForEach(id => query.Add("desiredEmployeeIds", id.ToString()));
-        builder.Query = query.ToString();
-        
+        var hackathonId = 1;
+        var juniors = juniorIds.Select(id => new Employee(id, $"Junior {id}")).ToList();
+        var teamLeads = teamLeadIds.Select(id => new Employee(id, $"Team Lead {id}")).ToList();
+
         // Act
-        var response = await _httpClient.GetAsync(builder.ToString());
+        var votingStartedEvent = new VotingStartedEvent(hackathonId, teamLeads, juniors);
+        await _bus.Publish(votingStartedEvent);
 
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        response.Content.Headers.ContentType!.ToString().Should().Contain("application/json");
+        _bus.ConnectPublishObserver(new PublishObserver(juniorIds, teamLeadIds));
+    }
+}
 
-        var content = await response.Content.ReadAsStringAsync();
-        var wishlist = JsonConvert.DeserializeObject<WishList>(content);
+public class PublishObserver(List<int> juniorIds, List<int> teamLeadIds) : IPublishObserver
+{
+    public Task PublishFault<T>(PublishContext<T> context, Exception exception) where T : class
+    {
+        return Task.CompletedTask;
+    }
 
-        wishlist.Should().NotBeNull();
-        wishlist!.EmployeeId.Should().Be(1);
-        wishlist.DesiredEmployees.Should().HaveCount(desiredEmployeeCount);
-        wishlist.DesiredEmployees.Should().BeEquivalentTo(desiredEmployeeIds);
+    public Task PostPublish<T>(PublishContext<T> context) where T : class
+    {
+        if (context.Message is not WishListEvent wishListEvent)
+        {
+            return Task.CompletedTask;
+        }
+
+        var wishList = wishListEvent.WishList;
+
+        wishList.Should().NotBeNull();
+
+        if (wishList.EmployeeId >= 20)
+        {
+            teamLeadIds.Should().Contain(wishList.EmployeeId);
+            wishList.DesiredEmployees.Should().BeEquivalentTo(juniorIds);
+        }
+        else
+        {
+            juniorIds.Should().Contain(wishList.EmployeeId);
+            wishList.DesiredEmployees.Should().BeEquivalentTo(teamLeadIds);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task PrePublish<T>(PublishContext<T> context) where T : class
+    {
+        return Task.CompletedTask;
     }
 }

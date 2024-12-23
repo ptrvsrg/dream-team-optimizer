@@ -6,7 +6,8 @@ networks:
 
 volumes:
     hackathon-postgres-data:
-    traefik-config:
+    hackathon-rabbitmq-data:
+    hackathon-traefik-config:
 
 x-service-templates:
     ms-employee: &ms-employee
@@ -18,6 +19,7 @@ x-service-templates:
             Consul__Port: 8500
             Consul__Discovery__Port: 8080
             ConnectionStrings__Postgres: 'Host=postgres;Port=5432;Database=hackathon;Username=admin;Password=password;'
+            ConnectionStrings__RabbitMq: 'amqp://admin:password@rabbitmq:5672'
         healthcheck:
             test: [ "CMD-SHELL", "wget -T5 -qO- http://localhost:8080/health | grep Healthy || exit 1" ]
         networks:
@@ -28,6 +30,8 @@ x-service-templates:
             consul:
                 condition: service_healthy
             postgres:
+                condition: service_healthy
+            rabbitmq:
                 condition: service_healthy
 
 services:
@@ -49,6 +53,25 @@ services:
             - hackathon-net
         labels:
             - "traefik.enable=false"
+            
+    rabbitmq:
+        image: rabbitmq:4.0.4-management-alpine
+        container_name: rabbitmq
+        restart: unless-stopped
+        environment:
+            RABBITMQ_DEFAULT_USER: admin
+            RABBITMQ_DEFAULT_PASS: password
+        healthcheck:
+            test: rabbitmq-diagnostics -q ping
+        ports:
+            - "25672:5672"
+            - "35672:15672"
+        volumes:
+            - hackathon-rabbitmq-data:/var/lib/rabbitmq
+        networks:
+            - hackathon-net
+        labels:
+            - "traefik.enable=false"
     
     consul:
         image: consul:1.15.4
@@ -62,6 +85,7 @@ services:
             - hackathon-net
         labels:
             - "traefik.enable=false"
+                
     
     ms-employee-1:
         <<: *ms-employee
@@ -150,12 +174,13 @@ services:
         container_name: ms-hr-manager
         restart: unless-stopped
         environment:
-            Application__Strategy: 'WeightedPreference'
+            Application__Strategy: 'BipartiteGraph'
             Consul__Host: consul
             Consul__Port: 8500
             Consul__Discovery__Hostname: ms-hr-manager
             Consul__Discovery__Port: 8080
             ConnectionStrings__Postgres: 'Host=postgres;Port=5432;Database=hackathon;Username=admin;Password=password;'
+            ConnectionStrings__RabbitMq: 'amqp://admin:password@rabbitmq:5672'
         healthcheck:
             test: [ "CMD-SHELL", "wget -T5 -qO- http://localhost:8080/health | grep Healthy || exit 1" ]
         networks:
@@ -166,6 +191,8 @@ services:
             consul:
                 condition: service_healthy
             postgres:
+                condition: service_healthy
+            rabbitmq:
                 condition: service_healthy
             ms-employee-1:
                 condition: service_healthy
@@ -188,6 +215,7 @@ services:
             ms-employee-25:
                 condition: service_healthy
                 
+                
     ms-hr-director:
         image: ptrvsrg/dream-team-optimizer-ms-hr-director:latest
         container_name: ms-hr-director
@@ -199,6 +227,7 @@ services:
             Consul__Discovery__Hostname: ms-hr-director
             Consul__Discovery__Port: 8080
             ConnectionStrings__Postgres: 'Host=postgres;Port=5432;Database=hackathon;Username=admin;Password=password;'
+            ConnectionStrings__RabbitMq: 'amqp://admin:password@rabbitmq:5672'
         healthcheck:
             test: [ "CMD-SHELL", "wget -T5 -qO- http://localhost:8080/health | grep Healthy || exit 1" ]
         networks:
@@ -208,6 +237,8 @@ services:
                 condition: service_healthy
             postgres:
                 condition: service_healthy
+            rabbitmq:
+                condition: service_healthy
             ms-hr-manager:
                 condition: service_healthy
         labels:
@@ -216,6 +247,7 @@ services:
             - "traefik.http.routers.ms-hr-director.priority=10"
             - "traefik.http.routers.ms-hr-director.service=ms-hr-director"
             - "traefik.http.services.ms-hr-director.loadbalancer.server.port=8080"
+                
                 
     traefik:
         image: traefik:v2.11.14
@@ -234,7 +266,7 @@ services:
             - "20081:8080"
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
-            - traefik-config:/etc/traefik
+            - hackathon-traefik-config:/etc/traefik
         labels:
             - "traefik.enable=false"
         networks:

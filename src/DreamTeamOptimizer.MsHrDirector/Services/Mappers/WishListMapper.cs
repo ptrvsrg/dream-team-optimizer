@@ -1,6 +1,6 @@
 using DreamTeamOptimizer.Core.Persistence.Entities;
 
-namespace DreamTeamOptimizer.MsHrManager.Services.Mappers;
+namespace DreamTeamOptimizer.MsHrDirector.Services.Mappers;
 
 public class WishListMapper
 {

@@ -1,5 +1,4 @@
 using DreamTeamOptimizer.Core.Persistence.Entities;
-using DreamTeamOptimizer.MsHrManager.Services.Mappers;
 
 namespace DreamTeamOptimizer.MsHrDirector.Services.Mappers;
 
@@ -13,7 +12,8 @@ public class HackathonMapper
             hackathon.Result,
             EmployeeMapper.ToModels(hackathon.Employees.ToList()),
             WishListMapper.ToModels(hackathon.WishLists.ToList()),
-            TeamMapper.ToModels(hackathon.Teams.ToList()));
+            TeamMapper.ToModels(hackathon.Teams.ToList()),
+            SatisfactionMapper.ToModels(hackathon.Satisfactions.ToList()));
     }
 
     public static Core.Models.HackathonSimple ToModelSimple(Hackathon hackathon)

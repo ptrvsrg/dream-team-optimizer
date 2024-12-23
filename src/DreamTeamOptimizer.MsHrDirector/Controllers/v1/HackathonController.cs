@@ -1,5 +1,6 @@
 using DreamTeamOptimizer.Core.Models;
 using DreamTeamOptimizer.MsHrDirector.Interfaces.Services;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DreamTeamOptimizer.MsHrDirector.Controllers.v1;
@@ -16,23 +17,10 @@ public class HackathonController(IHackathonService hackathonService) : Controlle
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public HackathonSimple Create()
+    public ActionResult<HackathonSimple> Create()
     {
-        return hackathonService.Create();
-    }
-
-    /// <summary>Webhook for saving hackathon result</summary>
-    /// <response code="200">Successfully saved</response>
-    /// <response code="404">Hackathon not found</response>
-    /// <response code="500">Internal server error</response>
-    [HttpPost]
-    [Route("webhook")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public void SaveResult([FromQuery] int hackathonId, [FromBody] HackathonResult result)
-    {
-        hackathonService.SaveResult(result, hackathonId);
+        var hackathon = hackathonService.Create();
+        return Created($"/api/v1/hackathons/{hackathon.Id}", hackathon);
     }
 
     /// <summary>Get hackathon by id</summary>
@@ -44,9 +32,10 @@ public class HackathonController(IHackathonService hackathonService) : Controlle
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public Hackathon GetById(int id)
+    public IActionResult GetById(int id)
     {
-        return hackathonService.GetById(id);
+        var hackathon = hackathonService.GetById(id);
+        return Ok(hackathon);
     }
 
     /// <summary>Calculate average harmonicity</summary>
@@ -56,8 +45,9 @@ public class HackathonController(IHackathonService hackathonService) : Controlle
     [Route("average-harmonic")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public AverageHarmonicity CalculateAverageHarmonicity()
+    public IActionResult CalculateAverageHarmonicity()
     {
-        return hackathonService.CalculateAverageHarmonicity();
+        var averageHarmonicity = hackathonService.CalculateAverageHarmonicity();
+        return Ok(averageHarmonicity);
     }
 }

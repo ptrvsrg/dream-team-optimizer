@@ -4,5 +4,6 @@ namespace DreamTeamOptimizer.MsHrManager.Interfaces.Services;
 
 public interface IWishListService
 {
-    List<WishList> Vote(List<Employee> teamLeads, List<Employee> juniors, int hackathonId);
+    void StartVoting(List<Employee> teamLeads, List<Employee> juniors, int hackathonId);
+    void SaveWishListToSession(WishList wishList, int hackathonId);
 }

@@ -1,0 +1,89 @@
+name: Release flow
+on:
+    push:
+        tags:
+            - '*'
+jobs:
+    build-and-test:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                solutions:
+                    - DreamTeamOptimizer.ConsoleApp.sln
+                    - DreamTeamOptimizer.MsEmployee.sln
+                    - DreamTeamOptimizer.MsHrManager.sln
+                    - DreamTeamOptimizer.MsHrDirector.sln
+        steps:
+            -   name: Checkout repository
+                uses: actions/checkout@v4
+            -   name: Setup .NET
+                uses: actions/setup-dotnet@v4
+                with:
+                    dotnet-version: 8.0.x
+            -   name: Restore dependencies
+                run: 'dotnet restore ${{ matrix.solutions }}'
+            -   name: Build
+                run: 'dotnet build ${{ matrix.solutions }} -o out --no-restore'
+            -   name: Upload build artifacts
+                uses: actions/upload-artifact@v3
+                with:
+                    name: 'build-artifacts-${{ matrix.solutions }}'
+                    path: out
+            -   name: Test
+                run: >-
+                    dotnet test ${{ matrix.solutions }} --no-restore --verbosity normal 
+                    --results-directory test-results --logger:trx
+            -   name: Upload test artifacts
+                uses: actions/upload-artifact@v3
+                with:
+                    name: 'test-artifacts-${{ matrix.solutions }}'
+                    path: test-results
+    push-images:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                solutions:
+                    - { key: "console" , value: "DreamTeamOptimizer.ConsoleApp.sln" }
+                    - { key: "ms-employee" , value: "DreamTeamOptimizer.MsEmployee.sln" }
+                    - { key: "ms-hr-manager" , value: "DreamTeamOptimizer.MsHrManager.sln" }
+                    - { key: "ms-hr-director" , value: "DreamTeamOptimizer.MsHrDirector.sln" }
+        defaults:
+            run:
+                working-directory: './Store'
+        steps:
+            -   name: Checkout repository
+                uses: actions/checkout@main
+            -   name: Login to GitHub Container Registry
+                uses: docker/login-action@v1
+                with:
+                    registry: ghcr.io
+                    username: ${{ github.repository_owner }}
+                    password: ${{ secrets.ACCESS_TOKEN }}
+            -   name: Extract metadata (tags, labels) for Docker
+                id: meta
+                uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+                with:
+                    images: ghcr.io/${{ github.repository }}-${{ matrix.solutions.key }}
+            -   name: Build and Push Docker image
+                uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+                with:
+                    context: .
+                    file: ./src/${{ matrix.solutions.value }}/Dockerfile
+                    push: true
+                    tags: |
+                        ghcr.io/${{ github.repository }}-${{ matrix.solutions.key }}:latest
+                        ghcr.io/${{ github.repository }}-${{ matrix.solutions.key }}:${{ github.ref_name }}
+                    labels: ${{ steps.meta.outputs.labels }}
+    create-release:
+        name: Create release
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Create release
+                env:
+                    GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+                    tag: ${{ github.ref_name }}
+                run: |
+                    gh release create "$tag" \
+                        --repo="$GITHUB_REPOSITORY" \
+                        --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
+                        --generate-notes

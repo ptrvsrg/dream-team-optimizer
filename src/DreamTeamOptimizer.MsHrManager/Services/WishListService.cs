@@ -1,14 +1,9 @@
-using System.Collections.Concurrent;
-using System.Net;
-using System.Web;
-using DreamTeamOptimizer.MsHrManager.Services.Mappers;
-using DreamTeamOptimizer.Core.Exceptions;
-using DreamTeamOptimizer.Core.Interfaces.Repositories;
-using DreamTeamOptimizer.MsHrManager.Interfaces.Clients;
+using DreamTeamOptimizer.Core.Models.Events;
+using DreamTeamOptimizer.MsHrManager.Interfaces.Brokers.Publishers;
 using DreamTeamOptimizer.MsHrManager.Interfaces.Services;
-using Serilog;
-using Steeltoe.Common.Discovery;
-using Steeltoe.Discovery;
+using DreamTeamOptimizer.MsHrManager.Models.Events;
+using DreamTeamOptimizer.MsHrManager.Models.Sessions;
+using Microsoft.Extensions.Caching.Memory;
 using Employee = DreamTeamOptimizer.Core.Models.Employee;
 using WishList = DreamTeamOptimizer.Core.Models.WishList;
 
@@ -16,26 +11,58 @@ namespace DreamTeamOptimizer.MsHrManager.Services;
 
 public class WishListService(
     ILogger<WishListService> logger,
-    IWishListRepository wishlistRepository,
-    IEmployeeClient employeeClient) : IWishListService
+    IMemoryCache cache,
+    IVotingStartedPublisher votingStartedPublisher,
+    IVotingCompletedPublisher votingCompletedPublisher) : IWishListService
 {
-    public List<WishList> Vote(List<Employee> employees, List<Employee> desiredEmployees, int hackathonId)
+    private TimeSpan CacheDuration => TimeSpan.FromMinutes(1);
+
+    public void StartVoting(List<Employee> teamLeads, List<Employee> juniors, int hackathonId)
     {
         logger.LogInformation("vote employees");
 
-        var desiredEmployeeIds = desiredEmployees.Select(e => e.Id).ToList();
+        logger.LogDebug("create session");
 
-        logger.LogDebug("send vote requests to {count} employees", employees.Count);
-        var wishlists = new ConcurrentBag<WishList>();
-        Parallel.ForEach(employees, employee => wishlists.Add(employeeClient.Vote(employee.Id, desiredEmployeeIds)));
+        var session = new VotingSession(0, teamLeads.Count + juniors.Count, teamLeads, juniors, new List<WishList>(),
+            new List<WishList>());
+        cache.Set(hackathonId, session, CacheDuration);
 
-        logger.LogDebug("save wishlists to database");
-        var wishlistList = wishlists.ToList();
-        var wishlistEntities = WishListMapper.ToEntities(wishlistList);
-        wishlistEntities.ForEach(p => p.HackathonId = hackathonId);
+        var voting = new VotingStartedEvent(hackathonId, teamLeads, juniors);
+        votingStartedPublisher.StartVoting(voting);
+    }
 
-        wishlistRepository.CreateAll(wishlistEntities);
+    public void SaveWishListToSession(WishList wishList, int hackathonId)
+    {
+        logger.LogInformation("save wishlists");
 
-        return wishlistList;
+        logger.LogDebug("update session");
+        var session = cache.Get<VotingSession>(hackathonId);
+        if (session == null) throw new KeyNotFoundException("Session not found");
+
+        if (session.Juniors.Find(j => j.Id == wishList.EmployeeId) != null)
+        {
+            session.JuniorsWishlists.Add(wishList);
+        }
+        else if (session.TeamLeads.Find(t => t.Id == wishList.EmployeeId) != null)
+        {
+            session.TeamLeadsWishlists.Add(wishList);
+        }
+        else
+        {
+            logger.LogWarning("unknown employee");
+            return;
+        }
+
+        session.Current++;
+
+        logger.LogDebug("save session to cache");
+        cache.Set(hackathonId, session);
+
+        if (session.Current == session.Total)
+        {
+            logger.LogInformation("publish voting completed event");
+            votingCompletedPublisher.CompleteVoting(session.TeamLeads, session.Juniors, session.TeamLeadsWishlists,
+                session.JuniorsWishlists, hackathonId);
+        }
     }
 }

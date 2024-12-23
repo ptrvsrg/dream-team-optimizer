@@ -1,6 +1,7 @@
-namespace DreamTeamOptimizer.Core.Models;
+namespace DreamTeamOptimizer.Core.Models.Events;
 
-public record HackathonResult(
+public record HackathonResultEvent(
+    int Id,
     List<WishList> JuniorsWishlists,
     List<WishList> TeamLeadsWishlists,
     List<Team> Teams);
