@@ -38,15 +38,16 @@ jobs:
                 with:
                     name: 'test-artifacts-${{ matrix.solutions }}'
                     path: test-results
-    push-images:
+    publish:
         runs-on: ubuntu-latest
+        needs: build-and-test
         strategy:
             matrix:
                 solutions:
-                    - { key: "console" , value: "DreamTeamOptimizer.ConsoleApp.sln" }
-                    - { key: "ms-employee" , value: "DreamTeamOptimizer.MsEmployee.sln" }
-                    - { key: "ms-hr-manager" , value: "DreamTeamOptimizer.MsHrManager.sln" }
-                    - { key: "ms-hr-director" , value: "DreamTeamOptimizer.MsHrDirector.sln" }
+                    - { key: "console" , value: "DreamTeamOptimizer.ConsoleApp" }
+                    - { key: "ms-employee" , value: "DreamTeamOptimizer.MsEmployee" }
+                    - { key: "ms-hr-manager" , value: "DreamTeamOptimizer.MsHrManager" }
+                    - { key: "ms-hr-director" , value: "DreamTeamOptimizer.MsHrDirector" }
         defaults:
             run:
                 working-directory: './Store'
@@ -74,9 +75,9 @@ jobs:
                         ghcr.io/${{ github.repository }}-${{ matrix.solutions.key }}:latest
                         ghcr.io/${{ github.repository }}-${{ matrix.solutions.key }}:${{ github.ref_name }}
                     labels: ${{ steps.meta.outputs.labels }}
-    create-release:
-        name: Create release
+    release:
         runs-on: ubuntu-latest
+        needs: publish
         steps:
             -   name: Create release
                 env:
